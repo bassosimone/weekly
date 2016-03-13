@@ -187,13 +187,7 @@ function calendar_list(tokens_path, callback) {
                 "Authorization" : "Bearer " + tokens_info.access_token,
             },
         };
-        json_request(options, function(error, response) {
-            if (error) {
-                callback(error);
-                return;
-            }
-            callback(null, response);
-        });
+        json_request(options, callback);
     });
 }
 
@@ -225,13 +219,7 @@ function calendar_events(tokens_path, calendar_path, callback) {
                     "Authorization" : "Bearer " + tokens_info.access_token,
                 },
             };
-            json_request(options, function(error, response) {
-                if (error) {
-                    callback(error);
-                    return;
-                }
-                callback(null, response);
-            });
+            json_request(options, callback);
         });
     });
 }
