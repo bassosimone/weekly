@@ -302,7 +302,7 @@ function weekly_aggregate_events(events) {
 const app_path = "private/app.json";
 const calendar_path = "private/calendar.json";
 const device_path = "private/device.json";
-const doc_url = "https://github.com/bassosimone/weekly#readme";
+const doc_url = "https://github.com/bassosimone/weekly#create-privateappjson-using-google-developers-console"
 const tokens_path = "private/tokens.json";
 
 // Initiate authentication process by requesting a device code to google
