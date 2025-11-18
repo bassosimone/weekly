@@ -15,8 +15,8 @@ import (
 
 // Event is a weekly calendar entry.
 type Event struct {
-	// Organization is the event $organization.
-	Organization string
+	// Project is the event funded $project.
+	Project string
 
 	// Activity is the event %activity.
 	Activity string
@@ -94,12 +94,12 @@ func (e *Event) parseSummary(ev *simplifiedCalendarEvent) error {
 
 	for _, token := range tokens {
 
-		// Parse organization
-		if organization, found := strings.CutPrefix(token, "$"); found {
-			if e.Organization != "" {
-				return fmt.Errorf("multiple organizations in %s", ev)
+		// Parse project
+		if project, found := strings.CutPrefix(token, "$"); found {
+			if e.Project != "" {
+				return fmt.Errorf("multiple projects in %s", ev)
 			}
-			e.Organization = organization
+			e.Project = project
 			continue
 		}
 

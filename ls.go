@@ -39,6 +39,7 @@ func lsMain(ctx context.Context, args *clip.CommandArgs[*clip.StdlibExecEnv]) er
 		configDir = xdgConfigHome()
 		days      = int64(1)
 		format    = "json"
+		project   = ""
 	)
 
 	// Add the --config-dir flag
@@ -48,10 +49,13 @@ func lsMain(ctx context.Context, args *clip.CommandArgs[*clip.StdlibExecEnv]) er
 	fset.Int64FlagVar(&days, "days", 0, "Number of days in the past to fetch.")
 
 	// Add the --format flag
-	fset.StringFlagVar(&format, "format", 0, "Format to emit output")
+	fset.StringFlagVar(&format, "format", 0, "Format to emit output: json (default) or csv.")
 
 	// Add the --help flag
 	fset.AutoHelp("help", 'h', "Print this help message and exit.")
+
+	// Add the --project flag
+	fset.StringFlagVar(&project, "project", 0, "Only show data for the given project.")
 
 	// Parse the flags
 	assert.NotError(fset.Parse(args.Args))
@@ -74,11 +78,23 @@ func lsMain(ctx context.Context, args *clip.CommandArgs[*clip.StdlibExecEnv]) er
 	rawEvents := must1(client.FetchEvents(ctx, &config))
 	events := must1(parser.Parse(rawEvents))
 
+	// Filter events by project
+	events = lsFilterByProject(project, events)
+
 	// TODO(bassosimone): add support for grouping events together
 
 	// Format and print the weekly-calendar events
 	lsFormat(format, os.Stdout, events)
 	return nil
+}
+
+func lsFilterByProject(project string, inputs []parser.Event) (output []parser.Event) {
+	for _, ev := range inputs {
+		if project == "" || ev.Project == project {
+			output = append(output, ev)
+		}
+	}
+	return
 }
 
 func lsFormat(format string, w io.Writer, events []parser.Event) {
@@ -105,7 +121,7 @@ func lsFormatCSV(w io.Writer, events []parser.Event) {
 		cw.Write([]string{
 			ev.StartTime.Format(time.RFC3339),
 			ev.Duration.String(),
-			ev.Organization,
+			ev.Project,
 			ev.Activity,
 			strings.Join(ev.Tags, " "),
 			strings.Join(ev.Persons, " "),

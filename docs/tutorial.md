@@ -7,8 +7,8 @@ a specific activity and describe the activity as follows:
 
 Where:
 
-1. `$project` identifies the project (e.g., `$mlab`) and must
-be specified exactly once for each entry
+1. `$project` identifies the funding/funded project (e.g., `$mlab`)
+and must be specified exactly once for each entry
 
 2. `%activity` identifies the activity (e.g., `%development`) and
 must be specified exactly once for each entry
