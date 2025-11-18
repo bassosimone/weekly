@@ -1,5 +1,3 @@
-# Weekly
-
 ![Mascot](docs/weekly.png)
 
 Track your weekly activities using Google Calendar.
