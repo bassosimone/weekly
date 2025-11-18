@@ -72,16 +72,18 @@ func Parse(inputs []*calendar.Event) ([]Event, error) {
 }
 
 func (e *Event) parseAll(ev *simplifiedCalendarEvent) error {
-	// Summary
+	// Parse summary
 	if err := e.parseSummary(ev); err != nil {
 		return err
 	}
 
-	// Times
+	// Parse times
 	return e.parseTimes(ev)
 }
 
 func (e *Event) parseSummary(ev *simplifiedCalendarEvent) error {
+	// Example entry: `$mlab %development #iqb @sbasso`
+
 	tokens := strings.Split(ev.Summary, " ")
 	if len(tokens) <= 0 {
 		return fmt.Errorf("empty summary in %s", ev)
@@ -113,7 +115,7 @@ func (e *Event) parseSummary(ev *simplifiedCalendarEvent) error {
 			continue
 		}
 
-		// Persons
+		// Parse persons
 		if person, found := strings.CutPrefix(token, "@"); found {
 			e.Persons = append(e.Persons, person)
 			continue
@@ -127,10 +129,12 @@ func (e *Event) parseSummary(ev *simplifiedCalendarEvent) error {
 
 func parseTimeInto(output *time.Time, input string) error {
 	const format = "2006-01-02T15:04:05-07:00"
+
 	tx, err := time.Parse(format, input)
 	if err != nil {
 		return err
 	}
+
 	*output = tx
 	return nil
 }
@@ -139,10 +143,12 @@ func (e *Event) parseTimes(ev *simplifiedCalendarEvent) error {
 	if err := parseTimeInto(&e.StartTime, ev.StartTime); err != nil {
 		return fmt.Errorf("invalid start time in %s: %w", ev, err)
 	}
+
 	var endTime time.Time
 	if err := parseTimeInto(&endTime, ev.EndTime); err != nil {
 		return fmt.Errorf("invalid end time in %s: %w", ev, err)
 	}
 	e.Duration = endTime.Sub(e.StartTime)
+
 	return nil
 }
