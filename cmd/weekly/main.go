@@ -4,6 +4,8 @@
 package main
 
 import (
+	"runtime/debug"
+
 	"github.com/bassosimone/clip"
 	"github.com/bassosimone/clip/pkg/nflag"
 )
@@ -13,7 +15,10 @@ var env = clip.NewStdlibExecEnv()
 
 func main() {
 	// Define the overall suite version
-	const version = "0.2.0"
+	version := "unknown"
+	if binfo, ok := debug.ReadBuildInfo(); ok {
+		version = binfo.Main.Version
+	}
 
 	// Create the ls leaf command
 	lsCmd := &clip.LeafCommand[*clip.StdlibExecEnv]{
