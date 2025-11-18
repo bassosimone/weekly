@@ -6,7 +6,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"path/filepath"
 
 	"github.com/bassosimone/clip"
 	"github.com/bassosimone/clip/pkg/assert"
@@ -29,11 +28,11 @@ func initMain(ctx context.Context, args *clip.CommandArgs[*clip.StdlibExecEnv]) 
 
 	// Create default values for flags
 	var (
-		dataDir = filepath.Join(".", "private")
+		configDir = xdgConfigHome()
 	)
 
 	// Add the --data-dir flag
-	fset.StringFlagVar(&dataDir, "data-dir", 0, "Directory containing the configuration.")
+	fset.StringFlagVar(&configDir, "data-dir", 0, "Directory containing the configuration.")
 
 	// Add the --help flag
 	fset.AutoHelp("help", 'h', "Print this help message and exit.")
@@ -47,6 +46,6 @@ func initMain(ctx context.Context, args *clip.CommandArgs[*clip.StdlibExecEnv]) 
 	fmt.Scanf("%s", &cinfo.ID)
 
 	// Write the calendar ID
-	must0(writeCalendarInfo(calendarPath(dataDir), &cinfo))
+	must0(writeCalendarInfo(calendarPath(configDir), &cinfo))
 	return nil
 }

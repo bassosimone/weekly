@@ -10,7 +10,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"path/filepath"
 	"strings"
 	"time"
 
@@ -37,13 +36,13 @@ func lsMain(ctx context.Context, args *clip.CommandArgs[*clip.StdlibExecEnv]) er
 
 	// Create default values for flags
 	var (
-		dataDir = filepath.Join(".", "private")
-		days    = int64(1)
-		format  = "json"
+		configDir = xdgConfigHome()
+		days      = int64(1)
+		format    = "json"
 	)
 
 	// Add the --data-dir flag
-	fset.StringFlagVar(&dataDir, "data-dir", 0, "Directory containing the configuration.")
+	fset.StringFlagVar(&configDir, "data-dir", 0, "Directory containing the configuration.")
 
 	// Add the --days flag
 	fset.Int64FlagVar(&days, "days", 0, "Number of days in the past to fetch.")
@@ -58,10 +57,10 @@ func lsMain(ctx context.Context, args *clip.CommandArgs[*clip.StdlibExecEnv]) er
 	assert.NotError(fset.Parse(args.Args))
 
 	// Create calendar API client
-	client := must1(calendarapi.NewClient(ctx, credentialsPath(dataDir)))
+	client := must1(calendarapi.NewClient(ctx, credentialsPath(configDir)))
 
 	// Load the calendar ID to use
-	cinfo := must1(readCalendarInfo(calendarPath(dataDir)))
+	cinfo := must1(readCalendarInfo(calendarPath(configDir)))
 
 	// Compute start time and end time
 	startTime, endTime := lsDaysToTimeInterval(days)

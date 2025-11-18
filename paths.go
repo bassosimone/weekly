@@ -3,14 +3,25 @@
 
 package main
 
-import "path/filepath"
+import (
+	"os"
+	"path/filepath"
+)
 
-// calendarPath returns the calendar.json path within dataDir.
-func calendarPath(dataDir string) string {
-	return filepath.Join(dataDir, "calendar.json")
+// xdgConfigHome returns the directory containing config.
+func xdgConfigHome() string {
+	if value, found := os.LookupEnv("XDG_DATA_HOME"); found {
+		return value
+	}
+	return filepath.Join(os.ExpandEnv("${HOME}"), ".config", "weekly")
 }
 
-// credentialsPath returns the credentials.json path within dataDir.
-func credentialsPath(dataDir string) string {
-	return filepath.Join(dataDir, "credentials.json")
+// calendarPath returns the calendar.json path within configDir.
+func calendarPath(configDir string) string {
+	return filepath.Join(configDir, "calendar.json")
+}
+
+// credentialsPath returns the credentials.json path within configDir.
+func credentialsPath(configDir string) string {
+	return filepath.Join(configDir, "credentials.json")
 }
