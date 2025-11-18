@@ -5,6 +5,7 @@ package main
 
 import (
 	"context"
+	_ "embed"
 	"encoding/csv"
 	"encoding/json"
 	"errors"
@@ -23,6 +24,9 @@ import (
 	"github.com/bassosimone/weekly/internal/parser"
 )
 
+//go:embed docs/ls_examples.txt
+var lsExamplesTxt string
+
 // lsMain is the main entry point for the `ls` leaf command.
 func lsMain(ctx context.Context, args *clip.CommandArgs[*clip.StdlibExecEnv]) error {
 	// Create flag set
@@ -31,6 +35,7 @@ func lsMain(ctx context.Context, args *clip.CommandArgs[*clip.StdlibExecEnv]) er
 	fset.PositionalArgumentsUsage = ""
 	fset.MinPositionalArgs = 0
 	fset.MaxPositionalArgs = 0
+	fset.Examples = lsExamplesTxt
 
 	// Not strictly needed in production but necessary for testing
 	fset.Exit = args.Env.Exit
@@ -56,7 +61,7 @@ func lsMain(ctx context.Context, args *clip.CommandArgs[*clip.StdlibExecEnv]) er
 	fset.Int64FlagVar(&days, "days", 0, "Number of days in the past to fetch.")
 
 	// Add the --format flag
-	fset.StringFlagVar(&format, "format", 0, "Format to emit output: json (default) or csv.")
+	fset.StringFlagVar(&format, "format", 0, "Format to emit output: json (default), csv, invoice.")
 
 	// Add the --help flag
 	fset.AutoHelp("help", 'h', "Print this help message and exit.")
@@ -107,7 +112,7 @@ func lsMaybeAggregate(policy string, inputs []parser.Event) (outputs []parser.Ev
 	case "monthly":
 		timeFormat = "2006-01"
 	default:
-		must0(errors.New("the --aggregate flag accepts only monthly or daily as argument"))
+		must0(errors.New("the --aggregate flag accepts one of these values: daily, monthly"))
 	}
 
 	// Aggregate by time period, project
@@ -146,13 +151,17 @@ func lsMaybeFilterByProject(project string, inputs []parser.Event) (outputs []pa
 
 func lsFormat(format string, w io.Writer, events []parser.Event) {
 	switch format {
-	default:
-		fallthrough
 	case "json":
 		lsFormatJSON(w, events)
 
 	case "csv":
 		lsFormatCSV(w, events)
+
+	case "invoice":
+		lsFormatInvoice(w, events)
+
+	default:
+		must0(errors.New("the --format flag accepts one of these values: csv, invoice, json"))
 	}
 }
 
@@ -172,6 +181,19 @@ func lsFormatCSV(w io.Writer, events []parser.Event) {
 			ev.Activity,
 			strings.Join(ev.Tags, " "),
 			strings.Join(ev.Persons, " "),
+		})
+	}
+	cw.Flush()
+	must0(cw.Error())
+}
+
+func lsFormatInvoice(w io.Writer, events []parser.Event) {
+	cw := csv.NewWriter(w)
+	for _, ev := range events {
+		cw.Write([]string{
+			ev.Project,
+			ev.StartTime.Format("2006-01-02"),
+			fmt.Sprint(ev.Duration.Hours()),
 		})
 	}
 	cw.Flush()

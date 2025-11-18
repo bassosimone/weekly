@@ -1,0 +1,23 @@
+Examples:
+
+To fetch the last three days for the `mlab` project in JSON format use:
+
+  weekly ls --project mlab --days 3
+
+Same as above, but using the CSV format:
+
+  weekly ls --project mlab --days 3 --format csv
+
+You can then aggregate by day as follows:
+
+  weekly ls --project mlab --days 3 --format csv --aggregate daily
+
+Same as above but monthly:
+
+  weekly ls --project mlab --days 60 --format csv --aggregate monthly
+
+You can convert to `invoice` format:
+
+  weekly ls --days 30 --format invoice --aggregate daily
+
+The `invoice` format is a simplified CSV format suitable for generating invoices.
