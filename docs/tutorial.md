@@ -25,5 +25,4 @@ We use the above convention to semantically tag events.
 
 Any additional token will be ignored.
 
-The `weekly ls` command prints the events for the default time range
-in JSON format. Refer to `weekly ls --help` for more help.
+Refer to `weekly ls --help` for help about reading the calendar.
