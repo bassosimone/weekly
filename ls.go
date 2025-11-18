@@ -22,6 +22,7 @@ import (
 	"github.com/bassosimone/clip/pkg/nflag"
 	"github.com/bassosimone/weekly/internal/calendarapi"
 	"github.com/bassosimone/weekly/internal/parser"
+	"github.com/olekukonko/tablewriter"
 )
 
 //go:embed docs/ls_examples.txt
@@ -47,7 +48,7 @@ func lsMain(ctx context.Context, args *clip.CommandArgs[*clip.StdlibExecEnv]) er
 		aggregate = ""
 		configDir = xdgConfigHome()
 		days      = int64(1)
-		format    = "json"
+		format    = "box"
 		project   = ""
 	)
 
@@ -61,7 +62,7 @@ func lsMain(ctx context.Context, args *clip.CommandArgs[*clip.StdlibExecEnv]) er
 	fset.Int64FlagVar(&days, "days", 0, "Number of days in the past to fetch.")
 
 	// Add the --format flag
-	fset.StringFlagVar(&format, "format", 0, "Format to emit output: json (default), csv, invoice.")
+	fset.StringFlagVar(&format, "format", 0, "Format to emit output: box (default), csv, invoice, json.")
 
 	// Add the --help flag
 	fset.AutoHelp("help", 'h', "Print this help message and exit.")
@@ -151,8 +152,8 @@ func lsMaybeFilterByProject(project string, inputs []parser.Event) (outputs []pa
 
 func lsFormat(format string, w io.Writer, events []parser.Event) {
 	switch format {
-	case "json":
-		lsFormatJSON(w, events)
+	case "box":
+		lsFormatBox(w, events)
 
 	case "csv":
 		lsFormatCSV(w, events)
@@ -160,8 +161,11 @@ func lsFormat(format string, w io.Writer, events []parser.Event) {
 	case "invoice":
 		lsFormatInvoice(w, events)
 
+	case "json":
+		lsFormatJSON(w, events)
+
 	default:
-		must0(errors.New("the --format flag accepts one of these values: csv, invoice, json"))
+		must0(errors.New("the --format flag accepts one of these values: box, csv, invoice, json"))
 	}
 }
 
@@ -185,6 +189,27 @@ func lsFormatCSV(w io.Writer, events []parser.Event) {
 	}
 	cw.Flush()
 	must0(cw.Error())
+}
+
+func lsFormatBox(w io.Writer, events []parser.Event) {
+	data := [][]any{
+		{"StartTime", "Hours", "Project", "Activity", "Tags", "Persons"},
+	}
+	for _, ev := range events {
+		data = append(data, []any{
+			ev.StartTime.Format("2006-01-02 15:04"),
+			fmt.Sprintf("%6.1f", ev.Duration.Hours()),
+			ev.Project,
+			ev.Activity,
+			strings.Join(ev.Tags, " "),
+			strings.Join(ev.Persons, " "),
+		})
+	}
+
+	table := tablewriter.NewTable(w)
+	table.Header(data[0])
+	table.Bulk(data[1:])
+	must0(table.Render())
 }
 
 func lsFormatInvoice(w io.Writer, events []parser.Event) {

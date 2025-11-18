@@ -1,12 +1,20 @@
 Examples:
 
+To see what you have done today in a user friendly format use:
+
+  weekly ls
+
 To fetch the last three days for the `mlab` project in JSON format use:
 
-  weekly ls --project mlab --days 3
+  weekly ls --project mlab --days 3 --format json
 
 Same as above, but using the CSV format:
 
   weekly ls --project mlab --days 3 --format csv
+
+Same as above, but generating boxes:
+
+  weekly ls --project mlab --days 3 --format box
 
 You can then aggregate by day as follows:
 
