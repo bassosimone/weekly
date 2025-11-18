@@ -4,28 +4,28 @@ To see what you have done today in a user friendly format use:
 
   weekly ls
 
-To fetch the last three days for the `mlab` project in JSON format use:
+To get the same data in a format suitable for invoicing:
 
-  weekly ls --project mlab --days 3 --format json
+  weekly ls --format invoice --aggregate daily
 
-Same as above, but using the CSV format:
+You can also change the format to be JSON:
 
-  weekly ls --project mlab --days 3 --format csv
+  weekly ls --format json
 
-Same as above, but generating boxes:
+Alternatively, you can change the format to be CSV:
 
-  weekly ls --project mlab --days 3 --format box
+  weekly ls --format csv
 
-You can then aggregate by day as follows:
+You can go back in time with the `--days` flag:
 
-  weekly ls --project mlab --days 3 --format csv --aggregate daily
+  weekly ls --days 3
 
-Same as above but monthly:
+You can aggregate daily and by project with `--aggregate`:
 
-  weekly ls --project mlab --days 60 --format csv --aggregate monthly
+  weekly ls --days 3 --aggregate daily
 
-You can convert to `invoice` format:
+You can also aggregate monthly:
 
-  weekly ls --days 30 --format invoice --aggregate daily
+  weekly ls --days 60 --aggregate monthly
 
 The `invoice` format is a simplified CSV format suitable for generating invoices.
