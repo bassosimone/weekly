@@ -1,3 +1,6 @@
+// parser.go - weekly-events parser implementation
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 // Package parser contains code to parse events.
 package parser
 
