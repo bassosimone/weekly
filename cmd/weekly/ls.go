@@ -58,7 +58,7 @@ func lsMain(ctx context.Context, args *clip.CommandArgs[*clip.StdlibExecEnv]) er
 	assert.NotError(fset.Parse(args.Args))
 
 	// Create calendar API client
-	client := must1(calendarapi.NewClient(ctx, credentialsPath(dataDir), tokenPath(dataDir)))
+	client := must1(calendarapi.NewClient(ctx, credentialsPath(dataDir)))
 
 	// Load the calendar ID to use
 	cinfo := must1(readCalendarInfo(calendarPath(dataDir)))
@@ -67,7 +67,12 @@ func lsMain(ctx context.Context, args *clip.CommandArgs[*clip.StdlibExecEnv]) er
 	startTime, endTime := lsDaysToTimeInterval(days)
 
 	// Fetch and parse the events as weekly-calendar events
-	rawEvents := must1(client.FetchEvents(ctx, cinfo.ID, startTime, endTime))
+	config := calendarapi.FetchEventsConfig{
+		CalendarID: cinfo.ID,
+		StartTime:  startTime,
+		EndTime:    endTime,
+	}
+	rawEvents := must1(client.FetchEvents(ctx, &config))
 	events := must1(parser.Parse(rawEvents))
 
 	// TODO(bassosimone): add support for grouping events together

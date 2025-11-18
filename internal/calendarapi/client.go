@@ -20,40 +20,39 @@ type Client struct {
 	svc *calendar.Service
 }
 
-// NewClient creates a new Calendar API client using OAuth2 credentials.
+// NewClient creates a new Calendar API client using service account credentials.
 //
 // The ctx argument allows to cancel a pending call.
 //
-// The credentialsPath argument is the path to the credentials file.
-//
-// The tokenPath argument is the path to the token file.
+// The credentialsPath argument is the file path containing the service account credentials.
 //
 // The return value is either a valid [*Client] or an error.
-func NewClient(ctx context.Context, credentialsPath, tokenPath string) (*Client, error) {
-	// Read the credentials that identify the app on Google Cloud
+func NewClient(ctx context.Context, credentialsPath string) (*Client, error) {
+	// Read the service account credentials
 	data, err := os.ReadFile(credentialsPath)
 	if err != nil {
 		return nil, fmt.Errorf("unable to read credentials file: %w", err)
 	}
 
-	// TODO(bassosimone): document that I have created a weekly-client-2025-11-18
-	// application identifier, have marked it as testing, and have assigned myself
-	// as the only person who is allowed to use this client.
-
-	// Parse credentials and create OAuth2 config
-	config, err := google.ConfigFromJSON(data, calendar.CalendarReadonlyScope)
+	// This function uses the private key in the JSON file to create a JWT,
+	// which is used by the service-account authentication flow.
+	//
+	// We use the CalendarReadonlyScope for security (least privilege).
+	config, err := google.JWTConfigFromJSON(data, calendar.CalendarReadonlyScope)
 	if err != nil {
-		return nil, fmt.Errorf("unable to parse credentials: %w", err)
+		return nil, fmt.Errorf("unable to create JWT config: %w", err)
 	}
 
-	// Get OAuth2 token either from file or via auth flow
-	token, err := getToken(ctx, config, tokenPath)
-	if err != nil {
-		return nil, fmt.Errorf("unable to get token: %w", err)
-	}
+	// The JWT config handles the authentication process automatically:
+	//
+	// 1. Signs the JWT with the private key.
+	//
+	// 2. Exchanges the JWT for an access token with Google's auth server.
+	//
+	// 3. Automatically refreshes the access token when it expires.
+	httpClient := config.Client(ctx)
 
 	// Create the calendar service
-	httpClient := config.Client(ctx, token)
 	service, err := calendar.NewService(ctx, option.WithHTTPClient(httpClient))
 	if err != nil {
 		return nil, fmt.Errorf("unable to create calendar service: %w", err)

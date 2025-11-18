@@ -14,8 +14,3 @@ func calendarPath(dataDir string) string {
 func credentialsPath(dataDir string) string {
 	return filepath.Join(dataDir, "credentials.json")
 }
-
-// tokenPath returns the token.json path within dataDir.
-func tokenPath(dataDir string) string {
-	return filepath.Join(dataDir, "token.json")
-}
