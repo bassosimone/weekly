@@ -4,8 +4,10 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
-	"os"
+
+	"github.com/rogpeppe/go-internal/lockedfile"
 )
 
 // calendarInfo contains the selected calendar info.
@@ -16,7 +18,7 @@ type calendarInfo struct {
 
 // readCalendarInfo reads [*calendarInfo] from the given filePath.
 func readCalendarInfo(path string) (*calendarInfo, error) {
-	rawData, err := os.ReadFile(path)
+	rawData, err := lockedfile.Read(path)
 	if err != nil {
 		return nil, err
 	}
@@ -25,4 +27,9 @@ func readCalendarInfo(path string) (*calendarInfo, error) {
 		return nil, err
 	}
 	return &info, nil
+}
+
+// writeCalendarInfo writes [*calendarInfo] to the given filePath.
+func writeCalendarInfo(path string, info *calendarInfo) error {
+	return lockedfile.Write(path, bytes.NewReader(must1(json.Marshal(info))), 0600)
 }

@@ -21,7 +21,7 @@ import (
 	"github.com/bassosimone/weekly/internal/parser"
 )
 
-// lsMain is the main entry point for the ls leaf command.
+// lsMain is the main entry point for the `ls` leaf command.
 func lsMain(ctx context.Context, args *clip.CommandArgs[*clip.StdlibExecEnv]) error {
 	// Create flag set
 	fset := nflag.NewFlagSet(args.CommandName, nflag.ExitOnError)

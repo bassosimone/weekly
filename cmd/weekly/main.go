@@ -17,20 +17,20 @@ func main() {
 
 	// Create the ls leaf command
 	lsCmd := &clip.LeafCommand[*clip.StdlibExecEnv]{
-		BriefDescriptionText: "List calendar events using Calendar API.",
+		BriefDescriptionText: "List events from the selected calendar.",
 		RunFunc:              lsMain,
 	}
 
 	// Create the init leaf command
 	initCmd := &clip.LeafCommand[*clip.StdlibExecEnv]{
-		BriefDescriptionText: "Login with Calendar API and select the calendar to use.",
+		BriefDescriptionText: "Initialize and select the calendar to use.",
 		RunFunc:              initMain,
 	}
 
 	// Create the root command
 	rootCmd := &clip.RootCommand[*clip.StdlibExecEnv]{
 		Command: &clip.DispatcherCommand[*clip.StdlibExecEnv]{
-			BriefDescriptionText: "Track personal activity using Google Calendar.",
+			BriefDescriptionText: "Track weekly activity using Google Calendar.",
 			Commands: map[string]clip.Command[*clip.StdlibExecEnv]{
 				"ls":   lsCmd,
 				"init": initCmd,
