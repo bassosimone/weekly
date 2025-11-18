@@ -10,10 +10,11 @@ import (
 
 // xdgConfigHome returns the directory containing config.
 func xdgConfigHome() string {
-	if value, found := os.LookupEnv("XDG_DATA_HOME"); found {
-		return value
+	base, found := os.LookupEnv("XDG_CONFIG_HOME")
+	if !found {
+		base = filepath.Join(os.ExpandEnv("${HOME}"), ".config")
 	}
-	return filepath.Join(os.ExpandEnv("${HOME}"), ".config", "weekly")
+	return filepath.Join(base, "weekly")
 }
 
 // calendarPath returns the calendar.json path within configDir.

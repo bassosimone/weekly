@@ -20,16 +20,22 @@ func main() {
 		version = binfo.Main.Version
 	}
 
-	// Create the ls leaf command
+	// Create the `init` leaf command
+	initCmd := &clip.LeafCommand[*clip.StdlibExecEnv]{
+		BriefDescriptionText: "Initialize and select the calendar to use.",
+		RunFunc:              initMain,
+	}
+
+	// Create the `ls` leaf command
 	lsCmd := &clip.LeafCommand[*clip.StdlibExecEnv]{
 		BriefDescriptionText: "List events from the selected calendar.",
 		RunFunc:              lsMain,
 	}
 
-	// Create the init leaf command
-	initCmd := &clip.LeafCommand[*clip.StdlibExecEnv]{
-		BriefDescriptionText: "Initialize and select the calendar to use.",
-		RunFunc:              initMain,
+	// Create the `tutorial` leaf command
+	tutorialCmd := &clip.LeafCommand[*clip.StdlibExecEnv]{
+		BriefDescriptionText: "Show detailed tutorial explaining the tool usage.",
+		RunFunc:              tutorialMain,
 	}
 
 	// Create the root command
@@ -37,8 +43,9 @@ func main() {
 		Command: &clip.DispatcherCommand[*clip.StdlibExecEnv]{
 			BriefDescriptionText: "Track weekly activity using Google Calendar.",
 			Commands: map[string]clip.Command[*clip.StdlibExecEnv]{
-				"ls":   lsCmd,
-				"init": initCmd,
+				"init":     initCmd,
+				"ls":       lsCmd,
+				"tutorial": tutorialCmd,
 			},
 			ErrorHandling:             nflag.ExitOnError,
 			Version:                   version,

@@ -124,7 +124,7 @@ func (e *Event) parseSummary(ev *simplifiedCalendarEvent) error {
 			continue
 		}
 
-		return fmt.Errorf("invalid token %q in %s", token, ev)
+		// Otherwise: ignore the token
 	}
 
 	return nil

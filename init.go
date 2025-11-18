@@ -31,8 +31,8 @@ func initMain(ctx context.Context, args *clip.CommandArgs[*clip.StdlibExecEnv]) 
 		configDir = xdgConfigHome()
 	)
 
-	// Add the --data-dir flag
-	fset.StringFlagVar(&configDir, "data-dir", 0, "Directory containing the configuration.")
+	// Add the --config-dir flag
+	fset.StringFlagVar(&configDir, "config-dir", 0, "Directory containing the configuration.")
 
 	// Add the --help flag
 	fset.AutoHelp("help", 'h', "Print this help message and exit.")

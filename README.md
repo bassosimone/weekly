@@ -2,103 +2,74 @@
 
 Track your weekly activities using Google Calendar.
 
-Uses ["OAuth2 for devices" authentication
-flow](https://developers.google.com/identity/protocols/OAuth2ForDevices).
+See [docs/tutorial.md](docs/tutorial.md) for details about how
+to format your calendar entries for tracking.
 
-Requires Node 5.5+ (uses some ECMA 6 features).
+## Setup
 
-Instructions to get you going:
+1. You need Go >= 1.24
 
-## Clone repository, install dependencies
+2. Install this tool
 
-As a first step clone the repository and install dependencies
-
-```
-git clone https://github.com/bassosimone/weekly
-cd weekly
-npm install
+```bash
+go install github.com/bassosimone/weekly@latest
 ```
 
-## Create private/app.json using Google Developers Console
+3. Create a project in Google Cloud Engine (e.g., `weekly`)
 
-Now you need to create your own application using Google Developers Console.
+4. Create a service account with no permissions within the project
 
-Follow these steps:
+5. Create a JSON key for the service account
 
-- Go to https://console.developers.google.com
+6. Create the working directory
 
-- Create new project called `weekly`
-
-- Enable the `Calendar API` for such project
-
-- Create `OAuth Client ID` credentials
-
-- Select type `Other`
-
-- Create file `private/app.json` according to this template
-
-```json
-{
-  "client_id": "put-client-id-here",
-  "client_secret": "put-client-secret-here"
-}
+```bash
+install -d $HOME/.config/weekly
 ```
 
-## Authenticate device for using the Calendar API
+7. Move the service account JSON key file to `$HOME/.config/weekly/credentials.json`
 
-Now we need to register this application for using the Calendar API. This
-is a multi-step process, started with this command:
+8. Share the calendar with the service account email address
 
-```
-node index.js --init
-```
+9. Take note of the calendar ID
 
-You will need to go to a Google website indicated by the program and enter
-an authentication code indicated by the program.
+10. Save the calendar ID into the weekly tool by running `weekly init`:
 
-## Complete authentication for using Calendar API
-
-Once you've inserted the code into the indicated Google website, run
-
-```
-node index.js --step2
+```bash
+$HOME/go/bin/weekly init
 ```
 
-After this step, you are authenticated and can call the Calendar API.
+## Usage
 
-## Select the calendar you want to use
+Use the `weekly ls` command to list calendar events:
 
-The following command allows you to choose the calendar you want to use:
-
-```
-node index.js --step3
+```bash
+~/go/bin/weekly ls
 ```
 
-Specifically, the program shows you the list of available calendars and then
-you shall tell it which calendar-id you want to use.
+Use `weekly tutorial` to understand how to format calendar
+events or read [docs/tutorial.md](docs/tutorial.md):
 
-## Query your calendar
-
-To query your calendar, use this command:
-
-```
-node index.js
+```bash
+~/go/bin/weekly tutorial
 ```
 
-By default it returns statistics related to the last week.
+Use `weekly --help` to get interactive help:
 
-## Refresh your token
-
-The token obtained using `--step2` should typically expire after an hour.
-
-If you try to query the calendar when the token is expired, Google API will
-reply with 401 and the program will tell you so and suggest to run:
-
-```
-node index.js --refresh
+```bash
+~/go/bin/weekly --help
 ```
 
-This *should* refresh the token. There is a maximum number of times you
-can refresh a token. Afterwards, my understanding is that you shall restart
-the initialization procedure from `--init`.
+## Directories and Files
 
+The `weekly` tool honors `$XDG_CONFIG_HOME`. When `$XDG_CONFIG_HOME`
+is not set, we use `$HOME/.config` as the default value.
+
+We save data in `$XDG_CONFIG_HOME/weekly`:
+
+1. `calendar.json` contains the calendar ID
+
+2. `credentials.json` contains the service-account credentials
+
+Every command accepts the `--config-dir <dir>` flag to override the
+directory containing the configuration.

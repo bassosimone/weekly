@@ -41,8 +41,8 @@ func lsMain(ctx context.Context, args *clip.CommandArgs[*clip.StdlibExecEnv]) er
 		format    = "json"
 	)
 
-	// Add the --data-dir flag
-	fset.StringFlagVar(&configDir, "data-dir", 0, "Directory containing the configuration.")
+	// Add the --config-dir flag
+	fset.StringFlagVar(&configDir, "config-dir", 0, "Directory containing the configuration.")
 
 	// Add the --days flag
 	fset.Int64FlagVar(&days, "days", 0, "Number of days in the past to fetch.")
