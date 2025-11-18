@@ -7,9 +7,12 @@ import (
 	"context"
 	"encoding/csv"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
+	"maps"
 	"os"
+	"slices"
 	"strings"
 	"time"
 
@@ -36,11 +39,15 @@ func lsMain(ctx context.Context, args *clip.CommandArgs[*clip.StdlibExecEnv]) er
 
 	// Create default values for flags
 	var (
+		aggregate = ""
 		configDir = xdgConfigHome()
 		days      = int64(1)
 		format    = "json"
 		project   = ""
 	)
+
+	// Add the --aggregate
+	fset.StringFlagVar(&aggregate, "aggregate", 0, "Aggregate entries (daily or monthly).")
 
 	// Add the --config-dir flag
 	fset.StringFlagVar(&configDir, "config-dir", 0, "Directory containing the configuration.")
@@ -78,20 +85,60 @@ func lsMain(ctx context.Context, args *clip.CommandArgs[*clip.StdlibExecEnv]) er
 	rawEvents := must1(client.FetchEvents(ctx, &config))
 	events := must1(parser.Parse(rawEvents))
 
-	// Filter events by project
-	events = lsFilterByProject(project, events)
+	// Maybe filter events by project
+	events = lsMaybeFilterByProject(project, events)
 
-	// TODO(bassosimone): add support for grouping events together
+	// Maybe create daily|monthly aggregate
+	events = lsMaybeAggregate(aggregate, events)
 
 	// Format and print the weekly-calendar events
 	lsFormat(format, os.Stdout, events)
 	return nil
 }
 
-func lsFilterByProject(project string, inputs []parser.Event) (output []parser.Event) {
+func lsMaybeAggregate(policy string, inputs []parser.Event) (outputs []parser.Event) {
+	// Honor the policy
+	var timeFormat string
+	switch policy {
+	case "":
+		return inputs
+	case "daily":
+		timeFormat = "2006-01-02"
+	case "monthly":
+		timeFormat = "2006-01"
+	default:
+		must0(errors.New("the --aggregate flag accepts only monthly or daily as argument"))
+	}
+
+	// Aggregate by time period, project
+	sums := make(map[string]map[string]time.Duration)
+	for _, ev := range inputs {
+		timeKey := ev.StartTime.Format(timeFormat)
+		if sums[timeKey] == nil {
+			sums[timeKey] = make(map[string]time.Duration)
+		}
+		sums[timeKey][ev.Project] += ev.Duration
+	}
+
+	// Generate aggregate output slice
+	for _, timeKey := range slices.Sorted(maps.Keys(sums)) {
+		day := must1(time.Parse(timeFormat, timeKey))
+		for _, project := range slices.Sorted(maps.Keys(sums[timeKey])) {
+			duration := sums[timeKey][project]
+			outputs = append(outputs, parser.Event{
+				Project:   project,
+				StartTime: day,
+				Duration:  duration,
+			})
+		}
+	}
+	return
+}
+
+func lsMaybeFilterByProject(project string, inputs []parser.Event) (outputs []parser.Event) {
 	for _, ev := range inputs {
 		if project == "" || ev.Project == project {
-			output = append(output, ev)
+			outputs = append(outputs, ev)
 		}
 	}
 	return
