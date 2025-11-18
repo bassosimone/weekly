@@ -1,5 +1,7 @@
 # Weekly
 
+![Mascot](docs/weekly.png)
+
 Track your weekly activities using Google Calendar.
 
 See [docs/tutorial.md](docs/tutorial.md) for details about how
