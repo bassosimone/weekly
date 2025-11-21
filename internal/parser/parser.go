@@ -38,7 +38,14 @@ func Parse(inputs []calendarapi.Event) ([]Event, error) {
 	outputs := make([]Event, 0, len(inputs))
 
 	for _, input := range inputs {
-		var e Event
+		e := Event{
+			Project:   "",
+			Activity:  "",
+			Tags:      []string{},
+			Persons:   []string{},
+			StartTime: time.Time{},
+			Duration:  0,
+		}
 		if err := e.parseAll(&input); err != nil {
 			return nil, err
 		}
@@ -61,12 +68,7 @@ func (e *Event) parseAll(ev *calendarapi.Event) error {
 func (e *Event) parseSummary(ev *calendarapi.Event) error {
 	// Example entry: `$mlab %development #iqb @sbasso`
 
-	tokens := strings.Split(ev.Summary, " ")
-	if len(tokens) <= 0 {
-		return fmt.Errorf("empty summary in %s", ev)
-	}
-
-	for _, token := range tokens {
+	for token := range strings.SplitSeq(ev.Summary, " ") {
 
 		// Parse project
 		if project, found := strings.CutPrefix(token, "$"); found {
@@ -101,13 +103,19 @@ func (e *Event) parseSummary(ev *calendarapi.Event) error {
 		// Otherwise: ignore the token
 	}
 
+	// Ensure we have a project and an activity
+	if e.Project == "" || e.Activity == "" {
+		return fmt.Errorf("no project or activity in %s", ev)
+	}
+
 	return nil
 }
 
-func parseTimeInto(output *time.Time, input string) error {
-	const format = "2006-01-02T15:04:05-07:00"
+// timeFormat is the format expected for calendar time entries.
+const timeFormat = "2006-01-02T15:04:05-07:00"
 
-	tx, err := time.Parse(format, input)
+func parseTimeInto(output *time.Time, input string) error {
+	tx, err := time.Parse(timeFormat, input)
 	if err != nil {
 		return err
 	}
