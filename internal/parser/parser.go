@@ -5,12 +5,11 @@
 package parser
 
 import (
-	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
 
-	"google.golang.org/api/calendar/v3"
+	"github.com/bassosimone/weekly/internal/calendarapi"
 )
 
 // Event is a weekly calendar entry.
@@ -34,38 +33,13 @@ type Event struct {
 	Duration time.Duration
 }
 
-type simplifiedCalendarEvent struct {
-	// Summary is the calendar event summary
-	Summary string
-
-	// StartTime is the calendar event start time
-	StartTime string
-
-	// EndTime is the calendar event end time
-	EndTime string
-}
-
-func newSimplifiedCalendarEvent(ev *calendar.Event) *simplifiedCalendarEvent {
-	return &simplifiedCalendarEvent{
-		Summary:   ev.Summary,
-		StartTime: ev.Start.DateTime,
-		EndTime:   ev.End.DateTime,
-	}
-}
-
-func (ev *simplifiedCalendarEvent) String() string {
-	// Note: json.Marshal cannot fail for this structure
-	data, _ := json.Marshal(ev)
-	return string(data)
-}
-
 // Parse parses the fetched [*calendar.Event] returning [Event] entries.
-func Parse(inputs []*calendar.Event) ([]Event, error) {
+func Parse(inputs []calendarapi.Event) ([]Event, error) {
 	outputs := make([]Event, 0, len(inputs))
 
 	for _, input := range inputs {
 		var e Event
-		if err := e.parseAll(newSimplifiedCalendarEvent(input)); err != nil {
+		if err := e.parseAll(&input); err != nil {
 			return nil, err
 		}
 		outputs = append(outputs, e)
@@ -74,7 +48,7 @@ func Parse(inputs []*calendar.Event) ([]Event, error) {
 	return outputs, nil
 }
 
-func (e *Event) parseAll(ev *simplifiedCalendarEvent) error {
+func (e *Event) parseAll(ev *calendarapi.Event) error {
 	// Parse summary
 	if err := e.parseSummary(ev); err != nil {
 		return err
@@ -84,7 +58,7 @@ func (e *Event) parseAll(ev *simplifiedCalendarEvent) error {
 	return e.parseTimes(ev)
 }
 
-func (e *Event) parseSummary(ev *simplifiedCalendarEvent) error {
+func (e *Event) parseSummary(ev *calendarapi.Event) error {
 	// Example entry: `$mlab %development #iqb @sbasso`
 
 	tokens := strings.Split(ev.Summary, " ")
@@ -142,7 +116,7 @@ func parseTimeInto(output *time.Time, input string) error {
 	return nil
 }
 
-func (e *Event) parseTimes(ev *simplifiedCalendarEvent) error {
+func (e *Event) parseTimes(ev *calendarapi.Event) error {
 	if err := parseTimeInto(&e.StartTime, ev.StartTime); err != nil {
 		return fmt.Errorf("invalid start time in %s: %w", ev, err)
 	}

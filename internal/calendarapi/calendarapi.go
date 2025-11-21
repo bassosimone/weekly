@@ -6,6 +6,7 @@ package calendarapi
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"os"
 	"time"
@@ -80,6 +81,42 @@ type FetchEventsConfig struct {
 	MaxEvents int64
 }
 
+// Event is the kind of event emitted by this package.
+//
+// It simplifies the actually-fetched event by removing unnecessary fields
+// and making the result straightforward to parse.
+type Event struct {
+	// Summary is the calendar event summary
+	Summary string
+
+	// StartTime is the calendar event start time
+	StartTime string
+
+	// EndTime is the calendar event end time
+	EndTime string
+}
+
+func newEventList(inputs []*calendar.Event) (outputs []Event) {
+	for _, ev := range inputs {
+		outputs = append(outputs, newEvent(ev))
+	}
+	return
+}
+
+func newEvent(ev *calendar.Event) Event {
+	return Event{
+		Summary:   ev.Summary,
+		StartTime: ev.Start.DateTime,
+		EndTime:   ev.End.DateTime,
+	}
+}
+
+func (ev *Event) String() string {
+	// Note: json.Marshal cannot fail for this structure
+	data, _ := json.Marshal(ev)
+	return string(data)
+}
+
 // FetchEvents retrieves calendar events within the specified time range.
 //
 // The ctx argument allows to cancel a pending call.
@@ -88,8 +125,8 @@ type FetchEventsConfig struct {
 //
 // The timeMin, timeMax arguments identify the time range.
 //
-// The return value is either a non-empty list or an error.
-func (c *Client) FetchEvents(ctx context.Context, config *FetchEventsConfig) ([]*calendar.Event, error) {
+// The return value is either a non-empty slice of [Event] or an error.
+func (c *Client) FetchEvents(ctx context.Context, config *FetchEventsConfig) ([]Event, error) {
 	eventsCall := c.svc.Events.List(config.CalendarID).
 		Context(ctx).
 		TimeMin(config.StartTime.Format(time.RFC3339)).
@@ -103,6 +140,6 @@ func (c *Client) FetchEvents(ctx context.Context, config *FetchEventsConfig) ([]
 		return nil, fmt.Errorf("unable to retrieve events: %w", err)
 	}
 
-	items := events.Items
+	items := newEventList(events.Items)
 	return items, nil
 }
