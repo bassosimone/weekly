@@ -43,7 +43,7 @@ func initMain(ctx context.Context, args *clip.CommandArgs[*clip.StdlibExecEnv]) 
 	// Read the calendar ID
 	var cinfo calendarInfo
 	fmt.Printf("Please, provide the default calendar ID: ")
-	fmt.Scanf("%s", &cinfo.ID)
+	_ = must1(fmt.Scanf("%s", &cinfo.ID))
 
 	// Write the calendar ID
 	must0(writeCalendarInfo(calendarPath(configDir), &cinfo))
