@@ -89,9 +89,7 @@ func (fsx *filesys) LockedfileWrite(path string, content io.Reader, perms fs.Fil
 // Files returns the paths of the files inside the filesystem.
 func (fsx *filesys) Files() (paths []string) {
 	fsx.mu.Lock()
-	for _, path := range slices.Sorted(maps.Keys(fsx.root)) {
-		paths = append(paths, path)
-	}
+	paths = append(paths, slices.Sorted(maps.Keys(fsx.root))...)
 	fsx.mu.Unlock()
 	return
 }
