@@ -6,22 +6,17 @@ package main
 import (
 	"context"
 	_ "embed"
-	"encoding/csv"
-	"encoding/json"
-	"errors"
 	"fmt"
-	"io"
 	"os"
-	"strings"
 	"time"
 
 	"github.com/bassosimone/clip"
 	"github.com/bassosimone/clip/pkg/assert"
 	"github.com/bassosimone/clip/pkg/nflag"
 	"github.com/bassosimone/weekly/internal/calendarapi"
+	"github.com/bassosimone/weekly/internal/output"
 	"github.com/bassosimone/weekly/internal/parser"
 	"github.com/bassosimone/weekly/internal/pipeline"
-	"github.com/olekukonko/tablewriter"
 )
 
 //go:embed docs/ls_examples.txt
@@ -108,7 +103,7 @@ func lsMain(ctx context.Context, args *clip.CommandArgs[*clip.StdlibExecEnv]) er
 	events = must1(pipeline.Run(&pconfig, events))
 
 	// Format and print the weekly-calendar events
-	lsFormat(format, os.Stdout, events)
+	must0(output.Write(os.Stdout, format, events))
 	return nil
 }
 
@@ -117,81 +112,6 @@ func lsMaybeWarnOnEventsNumber(maxEvents int64, events []parser.Event) {
 		fmt.Fprintf(os.Stderr, "warning: reached maximum number of events to query (%d)\n", maxEvents)
 		fmt.Fprintf(os.Stderr, "warning: try increasing the limit using `--max-events`\n")
 	}
-}
-
-func lsFormat(format string, w io.Writer, events []parser.Event) {
-	switch format {
-	case "box":
-		lsFormatBox(w, events)
-
-	case "csv":
-		lsFormatCSV(w, events)
-
-	case "invoice":
-		lsFormatInvoice(w, events)
-
-	case "json":
-		lsFormatJSON(w, events)
-
-	default:
-		must0(errors.New("the --format flag accepts one of these values: box, csv, invoice, json"))
-	}
-}
-
-func lsFormatJSON(w io.Writer, events []parser.Event) {
-	for _, ev := range events {
-		_ = must1(fmt.Fprintf(w, "%s\n", string(must1(json.Marshal(ev)))))
-	}
-}
-
-func lsFormatCSV(w io.Writer, events []parser.Event) {
-	cw := csv.NewWriter(w)
-	for _, ev := range events {
-		cw.Write([]string{
-			ev.StartTime.Format(time.RFC3339),
-			ev.Duration.String(),
-			ev.Project,
-			ev.Activity,
-			strings.Join(ev.Tags, " "),
-			strings.Join(ev.Persons, " "),
-		})
-	}
-	cw.Flush()
-	must0(cw.Error())
-}
-
-func lsFormatBox(w io.Writer, events []parser.Event) {
-	data := [][]any{
-		{"StartTime", "Hours", "Project", "Activity", "Tags", "Persons"},
-	}
-	for _, ev := range events {
-		data = append(data, []any{
-			ev.StartTime.Format("2006-01-02 15:04"),
-			fmt.Sprintf("%6.1f", ev.Duration.Hours()),
-			ev.Project,
-			ev.Activity,
-			strings.Join(ev.Tags, " "),
-			strings.Join(ev.Persons, " "),
-		})
-	}
-
-	table := tablewriter.NewTable(w)
-	table.Header(data[0])
-	table.Bulk(data[1:])
-	must0(table.Render())
-}
-
-func lsFormatInvoice(w io.Writer, events []parser.Event) {
-	cw := csv.NewWriter(w)
-	for _, ev := range events {
-		cw.Write([]string{
-			ev.Project,
-			ev.StartTime.Format("2006-01-02"),
-			fmt.Sprint(ev.Duration.Hours()),
-		})
-	}
-	cw.Flush()
-	must0(cw.Error())
 }
 
 func lsDaysToTimeInterval(days int64) (startTime, endTime time.Time) {
