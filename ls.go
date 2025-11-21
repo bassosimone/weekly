@@ -50,6 +50,7 @@ func lsMain(ctx context.Context, args *clip.CommandArgs[*clip.StdlibExecEnv]) er
 		days      = int64(1)
 		format    = "box"
 		project   = ""
+		total     = false
 	)
 
 	// Add the --aggregate
@@ -69,6 +70,9 @@ func lsMain(ctx context.Context, args *clip.CommandArgs[*clip.StdlibExecEnv]) er
 
 	// Add the --project flag
 	fset.StringFlagVar(&project, "project", 0, "Only show data for the given project.")
+
+	// Add the --total flag
+	fset.BoolFlagVar(&total, "total", 0, "Compute total amount of hours worked.")
 
 	// Parse the flags
 	assert.NotError(fset.Parse(args.Args))
@@ -97,9 +101,42 @@ func lsMain(ctx context.Context, args *clip.CommandArgs[*clip.StdlibExecEnv]) er
 	// Maybe create daily|monthly aggregate
 	events = lsMaybeAggregate(aggregate, events)
 
+	// Maybe create the total entry
+	events = lsMaybeTotal(total, events)
+
 	// Format and print the weekly-calendar events
 	lsFormat(format, os.Stdout, events)
 	return nil
+}
+
+func lsMaybeTotal(total bool, inputs []parser.Event) []parser.Event {
+	switch total {
+	case true:
+		sum := make(map[string]*parser.Event)
+		for _, ev := range inputs {
+			if _, ok := sum[ev.Project]; !ok {
+				sum[ev.Project] = &parser.Event{
+					Project:   ev.Project,
+					Activity:  "",
+					Tags:      []string{},
+					Persons:   []string{},
+					StartTime: ev.StartTime,
+					Duration:  ev.Duration,
+				}
+				continue
+			}
+			sum[ev.Project].Duration += ev.Duration
+		}
+
+		outputs := make([]parser.Event, 0, len(sum))
+		for _, ev := range sum {
+			outputs = append(outputs, *ev)
+		}
+		return outputs
+
+	default:
+		return inputs
+	}
 }
 
 func lsMaybeAggregate(policy string, inputs []parser.Event) (outputs []parser.Event) {
