@@ -11,9 +11,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"maps"
 	"os"
-	"slices"
 	"strings"
 	"time"
 
@@ -22,6 +20,7 @@ import (
 	"github.com/bassosimone/clip/pkg/nflag"
 	"github.com/bassosimone/weekly/internal/calendarapi"
 	"github.com/bassosimone/weekly/internal/parser"
+	"github.com/bassosimone/weekly/internal/pipeline"
 	"github.com/olekukonko/tablewriter"
 )
 
@@ -45,17 +44,19 @@ func lsMain(ctx context.Context, args *clip.CommandArgs[*clip.StdlibExecEnv]) er
 
 	// Create default values for flags
 	var (
-		aggregate = ""
 		configDir = xdgConfigHome(args.Env)
 		days      = int64(1)
 		format    = "box"
 		maxEvents = int64(4096)
-		project   = ""
-		total     = false
+		pconfig   = pipeline.Config{
+			Aggregate: "",
+			Project:   "",
+			Total:     false,
+		}
 	)
 
 	// Add the --aggregate
-	fset.StringFlagVar(&aggregate, "aggregate", 0, "Aggregate entries (daily or monthly).")
+	fset.StringFlagVar(&pconfig.Aggregate, "aggregate", 0, "Aggregate entries (daily or monthly).")
 
 	// Add the --config-dir flag
 	fset.StringFlagVar(&configDir, "config-dir", 0, "Directory containing the configuration.")
@@ -73,10 +74,10 @@ func lsMain(ctx context.Context, args *clip.CommandArgs[*clip.StdlibExecEnv]) er
 	fset.Int64FlagVar(&maxEvents, "max-events", 0, "Set maximum number of events to fetch.")
 
 	// Add the --project flag
-	fset.StringFlagVar(&project, "project", 0, "Only show data for the given project.")
+	fset.StringFlagVar(&pconfig.Project, "project", 0, "Only show data for the given project.")
 
 	// Add the --total flag
-	fset.BoolFlagVar(&total, "total", 0, "Compute total amount of hours worked.")
+	fset.BoolFlagVar(&pconfig.Total, "total", 0, "Compute total amount of hours worked.")
 
 	// Parse the flags
 	assert.NotError(fset.Parse(args.Args))
@@ -103,14 +104,8 @@ func lsMain(ctx context.Context, args *clip.CommandArgs[*clip.StdlibExecEnv]) er
 	// Maybe emit warning depending on the number of events
 	lsMaybeWarnOnEventsNumber(maxEvents, events)
 
-	// Maybe filter events by project
-	events = lsMaybeFilterByProject(project, events)
-
-	// Maybe create daily|monthly aggregate
-	events = lsMaybeAggregate(aggregate, events)
-
-	// Maybe create the total entry
-	events = lsMaybeTotal(total, events)
+	// Run the events processing pipeline
+	events = must1(pipeline.Run(&pconfig, events))
 
 	// Format and print the weekly-calendar events
 	lsFormat(format, os.Stdout, events)
@@ -122,84 +117,6 @@ func lsMaybeWarnOnEventsNumber(maxEvents int64, events []parser.Event) {
 		fmt.Fprintf(os.Stderr, "warning: reached maximum number of events to query (%d)\n", maxEvents)
 		fmt.Fprintf(os.Stderr, "warning: try increasing the limit using `--max-events`\n")
 	}
-}
-
-func lsMaybeTotal(total bool, inputs []parser.Event) []parser.Event {
-	switch total {
-	case true:
-		sum := make(map[string]*parser.Event)
-		for _, ev := range inputs {
-			if _, ok := sum[ev.Project]; !ok {
-				sum[ev.Project] = &parser.Event{
-					Project:   ev.Project,
-					Activity:  "",
-					Tags:      []string{},
-					Persons:   []string{},
-					StartTime: ev.StartTime,
-					Duration:  ev.Duration,
-				}
-				continue
-			}
-			sum[ev.Project].Duration += ev.Duration
-		}
-
-		outputs := make([]parser.Event, 0, len(sum))
-		for _, ev := range sum {
-			outputs = append(outputs, *ev)
-		}
-		return outputs
-
-	default:
-		return inputs
-	}
-}
-
-func lsMaybeAggregate(policy string, inputs []parser.Event) (outputs []parser.Event) {
-	// Honor the policy
-	var timeFormat string
-	switch policy {
-	case "":
-		return inputs
-	case "daily":
-		timeFormat = "2006-01-02"
-	case "monthly":
-		timeFormat = "2006-01"
-	default:
-		must0(errors.New("the --aggregate flag accepts one of these values: daily, monthly"))
-	}
-
-	// Aggregate by time period, project
-	sums := make(map[string]map[string]time.Duration)
-	for _, ev := range inputs {
-		timeKey := ev.StartTime.Format(timeFormat)
-		if sums[timeKey] == nil {
-			sums[timeKey] = make(map[string]time.Duration)
-		}
-		sums[timeKey][ev.Project] += ev.Duration
-	}
-
-	// Generate aggregate output slice
-	for _, timeKey := range slices.Sorted(maps.Keys(sums)) {
-		day := must1(time.Parse(timeFormat, timeKey))
-		for _, project := range slices.Sorted(maps.Keys(sums[timeKey])) {
-			duration := sums[timeKey][project]
-			outputs = append(outputs, parser.Event{
-				Project:   project,
-				StartTime: day,
-				Duration:  duration,
-			})
-		}
-	}
-	return
-}
-
-func lsMaybeFilterByProject(project string, inputs []parser.Event) (outputs []parser.Event) {
-	for _, ev := range inputs {
-		if project == "" || ev.Project == project {
-			outputs = append(outputs, ev)
-		}
-	}
-	return
 }
 
 func lsFormat(format string, w io.Writer, events []parser.Event) {
