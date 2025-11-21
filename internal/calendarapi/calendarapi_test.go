@@ -1,7 +1,6 @@
 // calendarapi_test.go - tests for the calendarapi package
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-// Package calendarapi allows using the Google Calendar API.
 package calendarapi
 
 import (
@@ -113,7 +112,7 @@ func TestNewClient(t *testing.T) {
 			// make sure the client is the one we actually expect
 			gotclient := client != nil
 			if diff := cmp.Diff(tc.client, gotclient); diff != "" {
-				t.Fatal(diff)
+				t.Error(diff)
 			}
 		})
 	}
@@ -279,7 +278,7 @@ func TestClient_FetchEvents(t *testing.T) {
 
 			// make sure the events are the one we expect
 			if diff := cmp.Diff(tc.events, events); diff != "" {
-				t.Fatal(diff)
+				t.Error(diff)
 			}
 		})
 	}

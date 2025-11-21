@@ -4,17 +4,14 @@
 package main
 
 import (
-	"os"
 	"path/filepath"
+
+	"github.com/bassosimone/weekly/internal/xdg"
 )
 
 // xdgConfigHome returns the directory containing config.
-func xdgConfigHome() string {
-	base, found := os.LookupEnv("XDG_CONFIG_HOME")
-	if !found {
-		base = filepath.Join(os.ExpandEnv("${HOME}"), ".config")
-	}
-	return filepath.Join(base, "weekly")
+func xdgConfigHome(env xdg.ExecEnv) string {
+	return must1(xdg.ConfigHome(env))
 }
 
 // calendarPath returns the calendar.json path within configDir.

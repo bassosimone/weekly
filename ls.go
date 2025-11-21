@@ -46,7 +46,7 @@ func lsMain(ctx context.Context, args *clip.CommandArgs[*clip.StdlibExecEnv]) er
 	// Create default values for flags
 	var (
 		aggregate = ""
-		configDir = xdgConfigHome()
+		configDir = xdgConfigHome(args.Env)
 		days      = int64(1)
 		format    = "box"
 		maxEvents = int64(4096)

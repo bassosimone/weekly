@@ -28,7 +28,7 @@ func initMain(ctx context.Context, args *clip.CommandArgs[*clip.StdlibExecEnv]) 
 
 	// Create default values for flags
 	var (
-		configDir = xdgConfigHome()
+		configDir = xdgConfigHome(args.Env)
 	)
 
 	// Add the --config-dir flag
