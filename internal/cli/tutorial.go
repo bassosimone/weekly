@@ -1,7 +1,7 @@
 // tutorial.go - tutorial subcommand
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-package main
+package cli
 
 import (
 	"context"
@@ -13,7 +13,7 @@ import (
 	"github.com/bassosimone/clip/pkg/nflag"
 )
 
-//go:embed docs/tutorial.md
+//go:embed tutorial.md
 var tutorialData string
 
 // tutorialMain is the main entry point for the `tutorial` leaf command.

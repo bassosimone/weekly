@@ -1,7 +1,7 @@
 // calendar.go - utilities to manage calendar.json
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-package main
+package cli
 
 import (
 	"bytes"

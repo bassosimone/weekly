@@ -1,7 +1,7 @@
 // init.go - init subcommand
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-package main
+package cli
 
 import (
 	"context"

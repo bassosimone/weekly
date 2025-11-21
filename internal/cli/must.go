@@ -1,7 +1,7 @@
 // must.go - must0 and must1 func
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-package main
+package cli
 
 import "log"
 

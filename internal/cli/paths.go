@@ -1,7 +1,7 @@
 // paths.go - utilities to construct paths
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-package main
+package cli
 
 import (
 	"path/filepath"

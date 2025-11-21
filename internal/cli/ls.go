@@ -1,7 +1,7 @@
 // ls.go - ls subcommand
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-package main
+package cli
 
 import (
 	"context"
@@ -19,7 +19,7 @@ import (
 	"github.com/bassosimone/weekly/internal/pipeline"
 )
 
-//go:embed docs/ls_examples.txt
+//go:embed ls_examples.txt
 var lsExamplesTxt string
 
 // lsMain is the main entry point for the `ls` leaf command.
