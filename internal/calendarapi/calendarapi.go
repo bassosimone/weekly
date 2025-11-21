@@ -75,6 +75,9 @@ type FetchEventsConfig struct {
 
 	// EndTime is the MANDATORY moment in time where to end.
 	EndTime time.Time
+
+	// MaxEvents is the MANDATORY number of maximum events to fetch.
+	MaxEvents int64
 }
 
 // FetchEvents retrieves calendar events within the specified time range.
@@ -87,12 +90,11 @@ type FetchEventsConfig struct {
 //
 // The return value is either a non-empty list or an error.
 func (c *Client) FetchEvents(ctx context.Context, config *FetchEventsConfig) ([]*calendar.Event, error) {
-	const maxResults = 4096
 	eventsCall := c.svc.Events.List(config.CalendarID).
 		Context(ctx).
 		TimeMin(config.StartTime.Format(time.RFC3339)).
 		TimeMax(config.EndTime.Format(time.RFC3339)).
-		MaxResults(maxResults).
+		MaxResults(config.MaxEvents).
 		SingleEvents(true).
 		OrderBy("startTime")
 

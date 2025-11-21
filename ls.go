@@ -49,6 +49,7 @@ func lsMain(ctx context.Context, args *clip.CommandArgs[*clip.StdlibExecEnv]) er
 		configDir = xdgConfigHome()
 		days      = int64(1)
 		format    = "box"
+		maxEvents = int64(4096)
 		project   = ""
 		total     = false
 	)
@@ -67,6 +68,9 @@ func lsMain(ctx context.Context, args *clip.CommandArgs[*clip.StdlibExecEnv]) er
 
 	// Add the --help flag
 	fset.AutoHelp("help", 'h', "Print this help message and exit.")
+
+	// Add the --max-events flag
+	fset.Int64FlagVar(&maxEvents, "max-events", 0, "Set maximum number of events to fetch.")
 
 	// Add the --project flag
 	fset.StringFlagVar(&project, "project", 0, "Only show data for the given project.")
@@ -91,9 +95,13 @@ func lsMain(ctx context.Context, args *clip.CommandArgs[*clip.StdlibExecEnv]) er
 		CalendarID: cinfo.ID,
 		StartTime:  startTime,
 		EndTime:    endTime,
+		MaxEvents:  maxEvents,
 	}
 	rawEvents := must1(client.FetchEvents(ctx, &config))
 	events := must1(parser.Parse(rawEvents))
+
+	// Maybe emit warning depending on the number of events
+	lsMaybeWarnOnEventsNumber(maxEvents, events)
 
 	// Maybe filter events by project
 	events = lsMaybeFilterByProject(project, events)
@@ -107,6 +115,13 @@ func lsMain(ctx context.Context, args *clip.CommandArgs[*clip.StdlibExecEnv]) er
 	// Format and print the weekly-calendar events
 	lsFormat(format, os.Stdout, events)
 	return nil
+}
+
+func lsMaybeWarnOnEventsNumber(maxEvents int64, events []parser.Event) {
+	if int64(len(events)) >= maxEvents {
+		fmt.Fprintf(os.Stderr, "warning: reached maximum number of events to query (%d)\n", maxEvents)
+		fmt.Fprintf(os.Stderr, "warning: try increasing the limit using `--max-events`\n")
+	}
 }
 
 func lsMaybeTotal(total bool, inputs []parser.Event) []parser.Event {
