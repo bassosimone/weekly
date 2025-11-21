@@ -23,6 +23,9 @@ type Client struct {
 	svc *calendar.Service
 }
 
+// Allows overriding [calendar.NewService] in the test suite.
+var calendarNewServiceFunc = calendar.NewService
+
 // NewClient creates a new Calendar API client using service account credentials.
 //
 // The ctx argument allows to cancel a pending call.
@@ -56,7 +59,7 @@ func NewClient(ctx context.Context, credentialsPath string) (*Client, error) {
 	httpClient := config.Client(ctx)
 
 	// Create the calendar service
-	service, err := calendar.NewService(ctx, option.WithHTTPClient(httpClient))
+	service, err := calendarNewServiceFunc(ctx, option.WithHTTPClient(httpClient))
 	if err != nil {
 		return nil, fmt.Errorf("unable to create calendar service: %w", err)
 	}
