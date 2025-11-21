@@ -13,7 +13,7 @@ import (
 )
 
 // initMain is the main entry point for the `init` leaf command.
-func initMain(ctx context.Context, args *clip.CommandArgs[*clip.StdlibExecEnv]) error {
+func initMain(ctx context.Context, args *clip.CommandArgs[*execEnv]) error {
 	// Create flag set
 	fset := nflag.NewFlagSet(args.CommandName, nflag.ExitOnError)
 	fset.Description = args.Command.BriefDescription()
@@ -42,10 +42,10 @@ func initMain(ctx context.Context, args *clip.CommandArgs[*clip.StdlibExecEnv]) 
 
 	// Read the calendar ID
 	var cinfo calendarInfo
-	fmt.Printf("Please, provide the default calendar ID: ")
+	fmt.Fprintf(args.Env.Stdout(), "Please, provide the default calendar ID: ")
 	_ = must1(fmt.Fscanf(args.Env.Stdin(), "%s", &cinfo.ID))
 
 	// Write the calendar ID
-	must0(writeCalendarInfo(calendarPath(configDir), &cinfo))
+	must0(writeCalendarInfo(env, calendarPath(configDir), &cinfo))
 	return nil
 }

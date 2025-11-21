@@ -5,46 +5,87 @@
 package cli
 
 import (
+	"io"
+	"io/fs"
 	"runtime/debug"
 
 	"github.com/bassosimone/clip"
 	"github.com/bassosimone/clip/pkg/nflag"
+	"github.com/rogpeppe/go-internal/lockedfile"
 )
 
-// configurable for testing
-var env = clip.NewStdlibExecEnv()
+// execEnv is the execution environment used by this tool.
+type execEnv struct {
+	// We embed a [*clip.StdlibExecEnv]
+	*clip.StdlibExecEnv
 
-// Main is the main function of the CLI implementation.
-func Main() {
+	// lockedfileRead allows mocking calls to [lockedfile.Read].
+	lockedfileRead func(path string) ([]byte, error)
+
+	// lockedfileWrite allows mocking calls to [lockedfile.Write].
+	lockedfileWrite func(path string, content io.Reader, perms fs.FileMode) error
+}
+
+var _ clip.ExecEnv = &execEnv{}
+
+// newExecEnv constructs a new instance of [*execEnv].
+func newExecEnv() *execEnv {
+	return &execEnv{
+		StdlibExecEnv:   clip.NewStdlibExecEnv(),
+		lockedfileRead:  lockedfile.Read,
+		lockedfileWrite: lockedfile.Write,
+	}
+}
+
+// LockedfileRead is equivalent to [lockedfile.Read].
+func (env *execEnv) LockedfileRead(path string) ([]byte, error) {
+	return env.lockedfileRead(path)
+}
+
+// LockedfileWrite is equivalent to [lockedfile.Write].
+func (env *execEnv) LockedfileWrite(path string, content io.Reader, perms fs.FileMode) error {
+	return env.lockedfileWrite(path, content, perms)
+}
+
+// accessible from testing
+var (
+	env     = newExecEnv()
+	version string
+)
+
+func init() {
 	// Define the overall suite version
-	version := "unknown"
+	version = "(devel)"
 	if binfo, ok := debug.ReadBuildInfo(); ok {
 		version = binfo.Main.Version
 	}
+}
 
+// Main is the main function of the CLI implementation.
+func Main() {
 	// Create the `init` leaf command
-	initCmd := &clip.LeafCommand[*clip.StdlibExecEnv]{
+	initCmd := &clip.LeafCommand[*execEnv]{
 		BriefDescriptionText: "Initialize and select the calendar to use.",
 		RunFunc:              initMain,
 	}
 
 	// Create the `ls` leaf command
-	lsCmd := &clip.LeafCommand[*clip.StdlibExecEnv]{
+	lsCmd := &clip.LeafCommand[*execEnv]{
 		BriefDescriptionText: "List events from the selected calendar.",
 		RunFunc:              lsMain,
 	}
 
 	// Create the `tutorial` leaf command
-	tutorialCmd := &clip.LeafCommand[*clip.StdlibExecEnv]{
+	tutorialCmd := &clip.LeafCommand[*execEnv]{
 		BriefDescriptionText: "Show detailed tutorial explaining the tool usage.",
 		RunFunc:              tutorialMain,
 	}
 
 	// Create the root command
-	rootCmd := &clip.RootCommand[*clip.StdlibExecEnv]{
-		Command: &clip.DispatcherCommand[*clip.StdlibExecEnv]{
+	rootCmd := &clip.RootCommand[*execEnv]{
+		Command: &clip.DispatcherCommand[*execEnv]{
 			BriefDescriptionText: "Track weekly activity using Google Calendar.",
-			Commands: map[string]clip.Command[*clip.StdlibExecEnv]{
+			Commands: map[string]clip.Command[*execEnv]{
 				"init":     initCmd,
 				"ls":       lsCmd,
 				"tutorial": tutorialCmd,

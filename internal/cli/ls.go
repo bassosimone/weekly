@@ -23,7 +23,7 @@ import (
 var lsExamplesTxt string
 
 // lsMain is the main entry point for the `ls` leaf command.
-func lsMain(ctx context.Context, args *clip.CommandArgs[*clip.StdlibExecEnv]) error {
+func lsMain(ctx context.Context, args *clip.CommandArgs[*execEnv]) error {
 	// Create flag set
 	fset := nflag.NewFlagSet(args.CommandName, nflag.ExitOnError)
 	fset.Description = args.Command.BriefDescription()
@@ -81,7 +81,7 @@ func lsMain(ctx context.Context, args *clip.CommandArgs[*clip.StdlibExecEnv]) er
 	client := must1(calendarapi.NewClient(ctx, credentialsPath(configDir)))
 
 	// Load the calendar ID to use
-	cinfo := must1(readCalendarInfo(calendarPath(configDir)))
+	cinfo := must1(readCalendarInfo(env, calendarPath(configDir)))
 
 	// Compute start time and end time
 	startTime, endTime := lsDaysToTimeInterval(days)

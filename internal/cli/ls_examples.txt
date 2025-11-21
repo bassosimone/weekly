@@ -32,4 +32,5 @@ You can use compute the total in the aggregation period:
 
   weekly ls --total
 
-The `invoice` format is a simplified CSV format suitable for generating invoices.
+The `invoice` format is a simplified CSV format suitable
+for generating invoices.
