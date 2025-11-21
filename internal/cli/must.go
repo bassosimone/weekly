@@ -3,15 +3,21 @@
 
 package cli
 
-import "log"
+import "fmt"
 
-func must0(err error) {
+func must0(env *execEnv, err error) {
 	if err != nil {
-		log.Fatalf("fatal: %s", err.Error())
+		fmt.Fprintf(env.Stderr(), "fatal: %s", err.Error())
+		env.Exit(1)
 	}
 }
 
 func must1[T any](value T, err error) T {
-	must0(err)
+	// Note: here we're using the global execEnv. A bummer but we
+	// cannot avoid it without breaking the usage pattern.
+	//
+	// A possible better solution is to make it possible to support this
+	// pattern via a specific `panic` in a new release of clip.
+	must0(env, err)
 	return value
 }

@@ -103,7 +103,7 @@ func lsMain(ctx context.Context, args *clip.CommandArgs[*execEnv]) error {
 	events = must1(pipeline.Run(&pconfig, events))
 
 	// Format and print the weekly-calendar events
-	must0(output.Write(os.Stdout, format, events))
+	must0(env, output.Write(os.Stdout, format, events))
 	return nil
 }
 

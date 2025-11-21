@@ -46,6 +46,6 @@ func initMain(ctx context.Context, args *clip.CommandArgs[*execEnv]) error {
 	_ = must1(fmt.Fscanf(args.Env.Stdin(), "%s", &cinfo.ID))
 
 	// Write the calendar ID
-	must0(writeCalendarInfo(env, calendarPath(configDir), &cinfo))
+	must0(env, writeCalendarInfo(env, calendarPath(configDir), &cinfo))
 	return nil
 }
