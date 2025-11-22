@@ -17,9 +17,21 @@ import (
 )
 
 // Client is a Google Calendar API client.
+type Client interface {
+	// FetchEvents retrieves calendar events within the specified time range.
+	//
+	// The ctx argument allows to cancel a pending call.
+	//
+	// The config argument contains the configuration for fetching events.
+	//
+	// The return value is either a non-empty slice of [Event] or an error.
+	FetchEvents(ctx context.Context, config *FetchEventsConfig) ([]Event, error)
+}
+
+// client is the concrete implementation of [Client].
 //
 // The zero value is invalid: construct with the [NewClient] factory.
-type Client struct {
+type client struct {
 	svc *calendar.Service
 }
 
@@ -32,8 +44,15 @@ var calendarNewServiceFunc = calendar.NewService
 //
 // The credentialsPath argument is the file path containing the service account credentials.
 //
-// The return value is either a valid [*Client] or an error.
-func NewClient(ctx context.Context, credentialsPath string) (*Client, error) {
+// The return value is either a valid [Client] or an error.
+//
+// Design note: This function returns the [Client] interface rather than a concrete
+// type, which deviates from the Go proverb "accept interfaces, return structs."
+// However, since this package exports behavior (calendar operations) rather than
+// state, and consumers primarily need mockability for testing, returning the
+// interface is appropriate here. This approach aligns with how interfaces are
+// used in larger Go codebases where testability is a primary concern.
+func NewClient(ctx context.Context, credentialsPath string) (Client, error) {
 	// Read the service account credentials
 	data, err := os.ReadFile(credentialsPath)
 	if err != nil {
@@ -64,10 +83,10 @@ func NewClient(ctx context.Context, credentialsPath string) (*Client, error) {
 		return nil, fmt.Errorf("unable to create calendar service: %w", err)
 	}
 
-	return &Client{svc: service}, nil
+	return &client{svc: service}, nil
 }
 
-// FetchEventsConfig contains config for [*Client.FetchEvents].
+// FetchEventsConfig contains config for [Client.FetchEvents].
 //
 // Initialize all MANDATORY fields.
 type FetchEventsConfig struct {
@@ -120,16 +139,8 @@ func (ev *Event) String() string {
 	return string(data)
 }
 
-// FetchEvents retrieves calendar events within the specified time range.
-//
-// The ctx argument allows to cancel a pending call.
-//
-// The calendarID argument is the string identifier of the calendar.
-//
-// The timeMin, timeMax arguments identify the time range.
-//
-// The return value is either a non-empty slice of [Event] or an error.
-func (c *Client) FetchEvents(ctx context.Context, config *FetchEventsConfig) ([]Event, error) {
+// FetchEvents implements [Client.FetchEvents].
+func (c *client) FetchEvents(ctx context.Context, config *FetchEventsConfig) ([]Event, error) {
 	eventsCall := c.svc.Events.List(config.CalendarID).
 		Context(ctx).
 		TimeMin(config.StartTime.Format(time.RFC3339)).

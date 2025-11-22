@@ -5,7 +5,9 @@ package cli
 
 import (
 	"bytes"
+	"context"
 	"errors"
+	"fmt"
 	"io"
 	"io/fs"
 	"maps"
@@ -15,6 +17,7 @@ import (
 	"sync/atomic"
 	"testing"
 
+	"github.com/bassosimone/weekly/internal/calendarapi"
 	"github.com/google/go-cmp/cmp"
 )
 
@@ -64,7 +67,7 @@ func (fsx *filesys) LockedfileRead(path string) ([]byte, error) {
 	var err error
 	data, found := fsx.root[path]
 	if !found {
-		err = fs.ErrNotExist
+		err = fmt.Errorf("%s: %w", path, fs.ErrNotExist)
 	}
 	fsx.mu.Unlock()
 	return data, err
@@ -94,12 +97,34 @@ func (fsx *filesys) Files() (paths []string) {
 	return
 }
 
+// calendarClient implements [calendarapi.Client].
+type calendarClient struct {
+	// fetchEvents returns either mocked events or an error.
+	//
+	// You MUST initialize this field.
+	fetchEvents func(ctx context.Context, config *calendarapi.FetchEventsConfig) ([]calendarapi.Event, error)
+}
+
+var _ calendarapi.Client = &calendarClient{}
+
+// FetchEvents implements [calendarapi.Client].
+func (c *calendarClient) FetchEvents(ctx context.Context, config *calendarapi.FetchEventsConfig) ([]calendarapi.Event, error) {
+	return c.fetchEvents(ctx, config)
+}
+
 func TestMain(t *testing.T) {
 	// describes a test case run by this function
 	type testCase struct {
 		// filesBefore contains the file system state
 		// before executing the Main function.
 		filesBefore map[string][]byte
+
+		// eventsToReturn optionally contains the events to
+		// return from calendarapi.Client.FetchEvents.
+		//
+		// If this field is not nil, we use mocks to simulate
+		// receiving this events from the API call.
+		eventsToReturn []calendarapi.Event
 
 		// argv contains the command line
 		argv []string
@@ -297,7 +322,7 @@ func TestMain(t *testing.T) {
 		},
 
 		// ====================================================-
-		// Tutorial Command
+		// `tutorial` Command
 		// ====================================================-
 
 		// `weekly tutorial --help` should print the help screen
@@ -363,7 +388,7 @@ func TestMain(t *testing.T) {
 		},
 
 		// ====================================================-
-		// Init Command
+		// `init` Command
 		// ====================================================-
 
 		// `weekly init --help` should print the help screen
@@ -442,6 +467,305 @@ func TestMain(t *testing.T) {
 				"weekly/calendar.json": []byte(`{"ID":"0xdeadbeef"}`),
 			},
 		},
+
+		// ====================================================-
+		// `ls` Command
+		// ====================================================-
+
+		// `weekly ls --help` should print the help screen
+		{
+			argv: []string{"weekly", "ls", "--help"},
+			stdoutLines: []string{
+				"Usage: weekly ls [options] ",
+				"",
+				"List events from the selected calendar.",
+				"",
+				"Options:",
+				"  --aggregate=VALUE",
+				"    Aggregate entries (daily or monthly).",
+				"",
+				"  --config-dir=VALUE",
+				"    Directory containing the configuration.",
+				"",
+				"  --days=VALUE",
+				"    Number of days in the past to fetch.",
+				"",
+				"  --format=VALUE",
+				"    Format to emit output: box (default), csv, invoice, json.",
+				"",
+				"  -h, --help",
+				"    Print this help message and exit.",
+				"",
+				"  --max-events=VALUE",
+				"    Set maximum number of events to fetch.",
+				"",
+				"  --project=VALUE",
+				"    Only show data for the given project.",
+				"",
+				"  --total",
+				"    Compute total amount of hours worked.",
+				"",
+				"Examples:",
+				"",
+				"To see what you have done today in a user friendly format use:",
+				"",
+				"  weekly ls",
+				"",
+				"To get the same data in a format suitable for invoicing:",
+				"",
+				"  weekly ls --format invoice --aggregate daily",
+				"",
+				"You can also change the format to be JSON:",
+				"",
+				"  weekly ls --format json",
+				"",
+				"Alternatively, you can change the format to be CSV:",
+				"",
+				"  weekly ls --format csv",
+				"",
+				"You can go back in time with the `--days` flag:",
+				"",
+				"  weekly ls --days 3",
+				"",
+				"You can aggregate daily and by project with `--aggregate`:",
+				"",
+				"  weekly ls --days 3 --aggregate daily",
+				"",
+				"You can also aggregate monthly:",
+				"",
+				"  weekly ls --days 60 --aggregate monthly",
+				"",
+				"You can use compute the total in the aggregation period:",
+				"",
+				"  weekly ls --total",
+				"",
+				"The `invoice` format is a simplified CSV format suitable",
+				"for generating invoices.",
+				"",
+			},
+			stderrLines: []string{""},
+			exitCode:    0,
+		},
+
+		// `weekly ls -h` should print the help screen
+		{
+			argv: []string{"weekly", "ls", "-h"},
+			stdoutLines: []string{
+				"Usage: weekly ls [options] ",
+				"",
+				"List events from the selected calendar.",
+				"",
+				"Options:",
+				"  --aggregate=VALUE",
+				"    Aggregate entries (daily or monthly).",
+				"",
+				"  --config-dir=VALUE",
+				"    Directory containing the configuration.",
+				"",
+				"  --days=VALUE",
+				"    Number of days in the past to fetch.",
+				"",
+				"  --format=VALUE",
+				"    Format to emit output: box (default), csv, invoice, json.",
+				"",
+				"  -h, --help",
+				"    Print this help message and exit.",
+				"",
+				"  --max-events=VALUE",
+				"    Set maximum number of events to fetch.",
+				"",
+				"  --project=VALUE",
+				"    Only show data for the given project.",
+				"",
+				"  --total",
+				"    Compute total amount of hours worked.",
+				"",
+				"Examples:",
+				"",
+				"To see what you have done today in a user friendly format use:",
+				"",
+				"  weekly ls",
+				"",
+				"To get the same data in a format suitable for invoicing:",
+				"",
+				"  weekly ls --format invoice --aggregate daily",
+				"",
+				"You can also change the format to be JSON:",
+				"",
+				"  weekly ls --format json",
+				"",
+				"Alternatively, you can change the format to be CSV:",
+				"",
+				"  weekly ls --format csv",
+				"",
+				"You can go back in time with the `--days` flag:",
+				"",
+				"  weekly ls --days 3",
+				"",
+				"You can aggregate daily and by project with `--aggregate`:",
+				"",
+				"  weekly ls --days 3 --aggregate daily",
+				"",
+				"You can also aggregate monthly:",
+				"",
+				"  weekly ls --days 60 --aggregate monthly",
+				"",
+				"You can use compute the total in the aggregation period:",
+				"",
+				"  weekly ls --total",
+				"",
+				"The `invoice` format is a simplified CSV format suitable",
+				"for generating invoices.",
+				"",
+			},
+			stderrLines: []string{""},
+			exitCode:    0,
+		},
+
+		// `weekly help ls` should print the help screen
+		{
+			argv: []string{"weekly", "help", "ls"},
+			stdoutLines: []string{
+				"Usage: weekly ls [options] ",
+				"",
+				"List events from the selected calendar.",
+				"",
+				"Options:",
+				"  --aggregate=VALUE",
+				"    Aggregate entries (daily or monthly).",
+				"",
+				"  --config-dir=VALUE",
+				"    Directory containing the configuration.",
+				"",
+				"  --days=VALUE",
+				"    Number of days in the past to fetch.",
+				"",
+				"  --format=VALUE",
+				"    Format to emit output: box (default), csv, invoice, json.",
+				"",
+				"  -h, --help",
+				"    Print this help message and exit.",
+				"",
+				"  --max-events=VALUE",
+				"    Set maximum number of events to fetch.",
+				"",
+				"  --project=VALUE",
+				"    Only show data for the given project.",
+				"",
+				"  --total",
+				"    Compute total amount of hours worked.",
+				"",
+				"Examples:",
+				"",
+				"To see what you have done today in a user friendly format use:",
+				"",
+				"  weekly ls",
+				"",
+				"To get the same data in a format suitable for invoicing:",
+				"",
+				"  weekly ls --format invoice --aggregate daily",
+				"",
+				"You can also change the format to be JSON:",
+				"",
+				"  weekly ls --format json",
+				"",
+				"Alternatively, you can change the format to be CSV:",
+				"",
+				"  weekly ls --format csv",
+				"",
+				"You can go back in time with the `--days` flag:",
+				"",
+				"  weekly ls --days 3",
+				"",
+				"You can aggregate daily and by project with `--aggregate`:",
+				"",
+				"  weekly ls --days 3 --aggregate daily",
+				"",
+				"You can also aggregate monthly:",
+				"",
+				"  weekly ls --days 60 --aggregate monthly",
+				"",
+				"You can use compute the total in the aggregation period:",
+				"",
+				"  weekly ls --total",
+				"",
+				"The `invoice` format is a simplified CSV format suitable",
+				"for generating invoices.",
+				"",
+			},
+			stderrLines: []string{""},
+			exitCode:    0,
+		},
+
+		// `weekly ls --format invoice` should return some events
+		{
+			argv: []string{"weekly", "ls", "--format", "invoice"},
+			filesBefore: map[string][]byte{
+				"weekly/calendar.json": []byte(`{"ID":"0xdeadbeef"}`),
+			},
+			eventsToReturn: []calendarapi.Event{
+				{
+					Summary:   "$nexa %development #neubot",
+					StartTime: "2016-12-08T10:00:00+01:00",
+					EndTime:   "2016-12-08T13:00:00+01:00",
+				},
+				{
+					Summary:   "$nexa %development #neubot",
+					StartTime: "2016-12-08T15:30:00+01:00",
+					EndTime:   "2016-12-08T17:00:00+01:00",
+				},
+				{
+					Summary:   "$nexa %meeting #wednesday",
+					StartTime: "2016-12-08T18:00:00+01:00",
+					EndTime:   "2016-12-08T20:00:00+01:00",
+				},
+			},
+			stdoutLines: []string{
+				"nexa,2016-12-08,3",
+				"nexa,2016-12-08,1.5",
+				"nexa,2016-12-08,2",
+				"",
+			},
+			stderrLines: []string{""},
+			exitCode:    0,
+		},
+
+		// `weekly ls --format invoice --max-events 3` should also warn
+		{
+			argv: []string{"weekly", "ls", "--format", "invoice", "--max-events", "3"},
+			filesBefore: map[string][]byte{
+				"weekly/calendar.json": []byte(`{"ID":"0xdeadbeef"}`),
+			},
+			eventsToReturn: []calendarapi.Event{
+				{
+					Summary:   "$nexa %development #neubot",
+					StartTime: "2016-12-08T10:00:00+01:00",
+					EndTime:   "2016-12-08T13:00:00+01:00",
+				},
+				{
+					Summary:   "$nexa %development #neubot",
+					StartTime: "2016-12-08T15:30:00+01:00",
+					EndTime:   "2016-12-08T17:00:00+01:00",
+				},
+				{
+					Summary:   "$nexa %meeting #wednesday",
+					StartTime: "2016-12-08T18:00:00+01:00",
+					EndTime:   "2016-12-08T20:00:00+01:00",
+				},
+			},
+			stdoutLines: []string{
+				"nexa,2016-12-08,3",
+				"nexa,2016-12-08,1.5",
+				"nexa,2016-12-08,2",
+				"",
+			},
+			stderrLines: []string{
+				"warning: reached maximum number of events to query (3)",
+				"warning: try increasing the limit using `--max-events`",
+				"",
+			},
+			exitCode: 0,
+		},
 	}
 
 	// run each test case
@@ -480,6 +804,18 @@ func TestMain(t *testing.T) {
 					return ".", true
 				}
 				return "", false
+			}
+
+			if len(tc.eventsToReturn) >= 1 {
+				env.newCalendarClient = func(ctx context.Context, path string) (calendarapi.Client, error) {
+					c := &calendarClient{
+						fetchEvents: func(ctx context.Context,
+							config *calendarapi.FetchEventsConfig) ([]calendarapi.Event, error) {
+							return tc.eventsToReturn, nil
+						},
+					}
+					return c, nil
+				}
 			}
 
 			// execute the function to test

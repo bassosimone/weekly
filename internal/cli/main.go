@@ -5,12 +5,14 @@
 package cli
 
 import (
+	"context"
 	"io"
 	"io/fs"
 	"runtime/debug"
 
 	"github.com/bassosimone/clip"
 	"github.com/bassosimone/clip/pkg/nflag"
+	"github.com/bassosimone/weekly/internal/calendarapi"
 	"github.com/rogpeppe/go-internal/lockedfile"
 )
 
@@ -24,6 +26,9 @@ type execEnv struct {
 
 	// lockedfileWrite allows mocking calls to [lockedfile.Write].
 	lockedfileWrite func(path string, content io.Reader, perms fs.FileMode) error
+
+	// newCalendarClient constructs a new [calendarapi.Client].
+	newCalendarClient func(ctx context.Context, credentialsPath string) (calendarapi.Client, error)
 }
 
 var _ clip.ExecEnv = &execEnv{}
@@ -31,9 +36,10 @@ var _ clip.ExecEnv = &execEnv{}
 // newExecEnv constructs a new instance of [*execEnv].
 func newExecEnv() *execEnv {
 	return &execEnv{
-		StdlibExecEnv:   clip.NewStdlibExecEnv(),
-		lockedfileRead:  lockedfile.Read,
-		lockedfileWrite: lockedfile.Write,
+		StdlibExecEnv:     clip.NewStdlibExecEnv(),
+		lockedfileRead:    lockedfile.Read,
+		lockedfileWrite:   lockedfile.Write,
+		newCalendarClient: calendarapi.NewClient,
 	}
 }
 
@@ -45,6 +51,11 @@ func (env *execEnv) LockedfileRead(path string) ([]byte, error) {
 // LockedfileWrite is equivalent to [lockedfile.Write].
 func (env *execEnv) LockedfileWrite(path string, content io.Reader, perms fs.FileMode) error {
 	return env.lockedfileWrite(path, content, perms)
+}
+
+// NewCalendarClient constructs a new [calendarapi.Client] instance.
+func (env *execEnv) NewCalendarClient(ctx context.Context, credentialsPath string) (calendarapi.Client, error) {
+	return env.newCalendarClient(ctx, credentialsPath)
 }
 
 // accessible from testing

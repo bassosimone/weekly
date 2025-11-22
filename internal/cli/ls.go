@@ -7,7 +7,6 @@ import (
 	"context"
 	_ "embed"
 	"fmt"
-	"os"
 	"time"
 
 	"github.com/bassosimone/clip"
@@ -78,7 +77,7 @@ func lsMain(ctx context.Context, args *clip.CommandArgs[*execEnv]) error {
 	assert.NotError(fset.Parse(args.Args))
 
 	// Create calendar API client
-	client := must1(calendarapi.NewClient(ctx, credentialsPath(configDir)))
+	client := must1(env.NewCalendarClient(ctx, credentialsPath(configDir)))
 
 	// Load the calendar ID to use
 	cinfo := must1(readCalendarInfo(env, calendarPath(configDir)))
@@ -103,14 +102,14 @@ func lsMain(ctx context.Context, args *clip.CommandArgs[*execEnv]) error {
 	events = must1(pipeline.Run(&pconfig, events))
 
 	// Format and print the weekly-calendar events
-	must0(env, output.Write(os.Stdout, format, events))
+	must0(env, output.Write(env.Stdout(), format, events))
 	return nil
 }
 
 func lsMaybeWarnOnEventsNumber(maxEvents int64, events []parser.Event) {
 	if int64(len(events)) >= maxEvents {
-		fmt.Fprintf(os.Stderr, "warning: reached maximum number of events to query (%d)\n", maxEvents)
-		fmt.Fprintf(os.Stderr, "warning: try increasing the limit using `--max-events`\n")
+		fmt.Fprintf(env.Stderr(), "warning: reached maximum number of events to query (%d)\n", maxEvents)
+		fmt.Fprintf(env.Stderr(), "warning: try increasing the limit using `--max-events`\n")
 	}
 }
 
