@@ -58,9 +58,27 @@ func (env *execEnv) NewCalendarClient(ctx context.Context, credentialsPath strin
 	return env.newCalendarClient(ctx, credentialsPath)
 }
 
-// accessible from testing
 var (
-	env     = newExecEnv()
+	// env is the global execution environment used throughout the CLI.
+	//
+	// This is intentionally global and mutable to enable comprehensive testing.
+	// Tests replace env entirely to mock all dependencies (filesystem, network,
+	// exit behavior, etc.) without requiring complex dependency injection.
+	//
+	// See main_test.go for the testing pattern: each test saves the original env,
+	// creates a fresh test environment with mocked dependencies, runs the code,
+	// and restores the original env via defer.
+	//
+	// While global mutable state is generally avoided, this is appropriate for
+	// a CLI application where:
+	//   - There is a single main execution path (not a library used by others)
+	//   - Testing requires complete control over all side effects
+	//   - The alternative would be threading env through every function call
+	env = newExecEnv()
+
+	// version contains the program version string.
+	//
+	// This is set during init() from build information.
 	version string
 )
 

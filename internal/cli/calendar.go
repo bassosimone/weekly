@@ -6,6 +6,7 @@ package cli
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 )
 
 // calendarInfo contains the selected calendar info.
@@ -18,11 +19,11 @@ type calendarInfo struct {
 func readCalendarInfo(env *execEnv, path string) (*calendarInfo, error) {
 	rawData, err := env.LockedfileRead(path)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to read calendar info from %s: %w", path, err)
 	}
 	var info calendarInfo
 	if err := json.Unmarshal(rawData, &info); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to parse calendar info from %s: %w", path, err)
 	}
 	return &info, nil
 }
