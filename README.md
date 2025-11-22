@@ -1,6 +1,6 @@
 ![Mascot](docs/weekly.png)
 
-[![Build Status](https://github.com/bassosimone/weekly/actions/workflows/go.yml/badge.svg)](https://github.com/bassosimone/weekly/actions) [![codecov](https://codecov.io/gh/bassosimone/weekly/branch/main/graph/badge.svg)](https://codecov.io/gh/bassosimone/weekly)
+[![Build Status](https://github.com/bassosimone/weekly/actions/workflows/go.yml/badge.svg)](https://github.com/bassosimone/weekly/actions) [![codecov](https://codecov.io/gh/bassosimone/weekly/branch/master/graph/badge.svg)](https://codecov.io/gh/bassosimone/weekly)
 
 Track your weekly activities using Google Calendar.
 
