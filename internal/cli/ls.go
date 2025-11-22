@@ -18,8 +18,8 @@ import (
 	"github.com/bassosimone/weekly/internal/pipeline"
 )
 
-//go:embed ls_examples.txt
-var lsExamplesTxt string
+//go:embed lsexamples.md
+var lsExamplesData string
 
 // lsMain is the main entry point for the `ls` leaf command.
 func lsMain(ctx context.Context, args *clip.CommandArgs[*execEnv]) error {
@@ -29,7 +29,7 @@ func lsMain(ctx context.Context, args *clip.CommandArgs[*execEnv]) error {
 	fset.PositionalArgumentsUsage = ""
 	fset.MinPositionalArgs = 0
 	fset.MaxPositionalArgs = 0
-	fset.Examples = lsExamplesTxt
+	fset.Examples = lsExamplesData
 
 	// Not strictly needed in production but necessary for testing
 	fset.Exit = args.Env.Exit

@@ -4,7 +4,7 @@
 
 Track your weekly activities using Google Calendar.
 
-See [docs/tutorial.md](docs/tutorial.md) for details about how
+See [tutorial.md](internal/cli/tutorial.md) for details about how
 to format your calendar entries for tracking.
 
 ## Setup
@@ -50,7 +50,7 @@ Use the `weekly ls` command to list calendar events:
 ```
 
 Use `weekly tutorial` to understand how to format calendar
-events or read [docs/tutorial.md](docs/tutorial.md):
+events or read [tutorial.md](internal/cli/tutorial.md):
 
 ```bash
 ~/go/bin/weekly tutorial
