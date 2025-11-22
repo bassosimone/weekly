@@ -7,6 +7,9 @@ Track your weekly activities using [Google Calendar](https://calendar.google.com
 See [tutorial.md](internal/cli/tutorial.md) for details about how
 to format your calendar entries for tracking.
 
+See [sessionexample.md](docs/sessionexample.md) for an example
+of a typical session where I am using `weekly` to track my time usage.
+
 ## Install
 
 1. You need Go >= 1.24
@@ -132,3 +135,19 @@ go build -v .
 ```
 
 The `./weekly` binary will be created in the current directory.
+
+## License
+
+```
+SPDX-License-Identifier: GPL-3.0-or-later
+```
+
+## Dependencies
+
+- [github.com/bassosimone/clip](https://pkg.go.dev/github.com/bassosimone/clip)
+- [github.com/google/go-cmp](https://pkg.go.dev/github.com/google/go-cmp)
+- [github.com/olekukonko/tablewriter](https://pkg.go.dev/github.com/olekukonko/tablewriter)
+- [github.com/rogpeppe/go-internal](https://pkg.go.dev/github.com/rogpeppe/go-internal)
+- [github.com/stretchr/testify](https://pkg.go.dev/github.com/stretchr/testify)
+- [golang.org/x/oauth2](https://pkg.go.dev/golang.org/x/oauth2)
+- [google.golang.org/api](https://pkg.go.dev/google.golang.org/api)
