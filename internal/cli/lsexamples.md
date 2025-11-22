@@ -28,7 +28,7 @@ You can also aggregate monthly:
 
     weekly ls --days 60 --aggregate monthly
 
-You can use compute the total in the aggregation period:
+You can also compute the total in the aggregation period:
 
     weekly ls --total
 

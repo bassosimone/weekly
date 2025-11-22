@@ -2,12 +2,12 @@
 
 [![Build Status](https://github.com/bassosimone/weekly/actions/workflows/go.yml/badge.svg)](https://github.com/bassosimone/weekly/actions) [![codecov](https://codecov.io/gh/bassosimone/weekly/branch/master/graph/badge.svg)](https://codecov.io/gh/bassosimone/weekly)
 
-Track your weekly activities using Google Calendar.
+Track your weekly activities using [Google Calendar](https://calendar.google.com/).
 
 See [tutorial.md](internal/cli/tutorial.md) for details about how
 to format your calendar entries for tracking.
 
-## Setup
+## Install
 
 1. You need Go >= 1.24
 
@@ -17,37 +17,49 @@ to format your calendar entries for tracking.
 go install github.com/bassosimone/weekly@latest
 ```
 
-3. Create a project in Google Cloud Engine (e.g., `weekly`)
+## First-Time Setup
 
-4. Create a service account with no permissions within the project
-
-5. Create a JSON key for the service account
-
-6. Create the working directory
+The following instructions assume that
 
 ```bash
-install -d $HOME/.config/weekly
+if [[ -n $XDG_CONFIG_HOME ]]; then
+	export configDir=$XDG_CONFIG_HOME/weekly
+else
+	export configDir=$HOME/.config/weekly
+fi
 ```
 
-7. Move the service account JSON key file to `$HOME/.config/weekly/credentials.json`
+1. Create a project in Google Cloud Engine (e.g., `weekly`)
 
-8. Share the calendar with the service account email address
+2. Create a service account with no permissions within the project
 
-9. Take note of the calendar ID
+3. Create a JSON key for the service account
 
-10. Save the calendar ID into the weekly tool by running `weekly init`:
+4. Create the configuration directory
+
+```bash
+install -d $configDir
+```
+
+5. Move the service account JSON key file to `$configDir/credentials.json`
+and then make it as private as possible:
+
+```bash
+chmod 600 $configDir/credentials.json
+```
+
+6. Share the calendar with the service account email address
+
+7. Take note of the calendar ID
+
+8. Save the calendar ID into the weekly tool by running `weekly init`
+and following its instructions to complete the configuration:
 
 ```bash
 $HOME/go/bin/weekly init
 ```
 
 ## Usage
-
-Use the `weekly ls` command to list calendar events:
-
-```bash
-~/go/bin/weekly ls
-```
 
 Use `weekly tutorial` to understand how to format calendar
 events or read [tutorial.md](internal/cli/tutorial.md):
@@ -56,22 +68,67 @@ events or read [tutorial.md](internal/cli/tutorial.md):
 ~/go/bin/weekly tutorial
 ```
 
+Use the `weekly ls` command to list calendar events:
+
+```bash
+~/go/bin/weekly ls
+```
+
+Use:
+
+```bash
+~/go/bin/weekly ls --help
+```
+
+or read [lsexamples.md](internal/cli/lsexamples.md) to
+see additional `weekly ls` usage examples.
+
 Use `weekly --help` to get interactive help:
 
 ```bash
 ~/go/bin/weekly --help
 ```
 
-## Directories and Files
+## Environment Variables
 
-The `weekly` tool honors `$XDG_CONFIG_HOME`. When `$XDG_CONFIG_HOME`
-is not set, we use `$HOME/.config` as the default value.
+The `weekly` tool honors `$XDG_CONFIG_HOME`. If this variable
+is set, the config directory is:
 
-We save data in `$XDG_CONFIG_HOME/weekly`:
+```bash
+$XDG_CONFIG_HOME/weekly
+```
 
-1. `calendar.json` contains the calendar ID
+Otherwise, `weekly` uses this config directory:
 
-2. `credentials.json` contains the service-account credentials
+```bash
+$HOME/.config/weekly
+```
 
 Every command accepts the `--config-dir <dir>` flag to override the
 directory containing the configuration.
+
+## Files
+
+The `weekly` tool requires two files inside its config directory:
+
+1. `credentials.json` containing the service-account credentials and
+manually created during the first-time setup process.
+
+2. `calendar.json` containing the ID of the calendar to use and
+created in the first-time setup process by `weekly init`.
+
+## Exit Code
+
+The `weekly` tools exits with `0` on success and nonzero on failure.
+
+## Build From Source
+
+You need Go >= 1.24. Run these commands:
+
+```bash
+git clone git@github.com/bassosimone/weekly
+cd weekly
+go build -v .
+```
+
+The `./weekly` binary will be created in the current directory.
