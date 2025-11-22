@@ -771,6 +771,12 @@ func TestMain(t *testing.T) {
 	// run each test case
 	for _, tc := range cases {
 		t.Run(strings.Join(tc.argv, " "), func(t *testing.T) {
+			// Save and restore the global env
+			oldEnv := env
+			defer func() {
+				env = oldEnv
+			}()
+
 			// replace and edit the test environment
 			env = newExecEnv()
 			env.OSArgs = tc.argv
