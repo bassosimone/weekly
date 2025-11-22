@@ -5,6 +5,9 @@ package main
 
 import "github.com/bassosimone/weekly/internal/cli"
 
+// accessible by tests to mock
+var cliMain = cli.Main
+
 func main() {
-	cli.Main()
+	cliMain()
 }
