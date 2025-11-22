@@ -68,19 +68,19 @@ Use `weekly tutorial` to understand how to format calendar
 events or read [tutorial.md](internal/cli/tutorial.md):
 
 ```bash
-~/go/bin/weekly tutorial
+$HOME/go/bin/weekly tutorial
 ```
 
 Use the `weekly ls` command to list calendar events:
 
 ```bash
-~/go/bin/weekly ls
+$HOME/go/bin/weekly ls
 ```
 
 Use:
 
 ```bash
-~/go/bin/weekly ls --help
+$HOME/go/bin/weekly ls --help
 ```
 
 or read [lsexamples.md](internal/cli/lsexamples.md) to
@@ -89,7 +89,7 @@ see additional `weekly ls` usage examples.
 Use `weekly --help` to get interactive help:
 
 ```bash
-~/go/bin/weekly --help
+$HOME/go/bin/weekly --help
 ```
 
 ## Environment Variables
