@@ -45,6 +45,7 @@ func lsMain(ctx context.Context, args *clip.CommandArgs[*execEnv]) error {
 		pconfig   = pipeline.Config{
 			Aggregate: "",
 			Project:   "",
+			Tag:       "",
 			Total:     false,
 		}
 	)
@@ -69,6 +70,9 @@ func lsMain(ctx context.Context, args *clip.CommandArgs[*execEnv]) error {
 
 	// Add the --project flag
 	fset.StringFlagVar(&pconfig.Project, "project", 0, "Only show data for the given project.")
+
+	// Add the --tag flag
+	fset.StringFlagVar(&pconfig.Tag, "tag", 0, "Only show data for the given tag.")
 
 	// Add the --total flag
 	fset.BoolFlagVar(&pconfig.Total, "total", 0, "Compute total amount of hours worked.")

@@ -145,6 +145,50 @@ func TestRun(t *testing.T) {
 		},
 
 		{
+			name: "filter by single tag",
+			config: &Config{
+				Tag: "neubot",
+			},
+			inputs: []parser.Event{
+				{
+					Project:   "nexa",
+					Activity:  "development",
+					Tags:      []string{"neubot"},
+					Persons:   []string{},
+					StartTime: mustParseTime(t, "2017-11-03T10:00:00+01:00"),
+					Duration:  time.Hour,
+				},
+				{
+					Project:   "mlab",
+					Activity:  "meeting",
+					Tags:      []string{"staff"},
+					Persons:   []string{"alice"},
+					StartTime: mustParseTime(t, "2017-11-03T11:30:00+01:00"),
+					Duration:  30 * time.Minute,
+				},
+				{
+					Project:   "nexa",
+					Activity:  "development",
+					Tags:      []string{"ndt"},
+					Persons:   []string{},
+					StartTime: mustParseTime(t, "2017-11-03T14:00:00+01:00"),
+					Duration:  45 * time.Minute,
+				},
+			},
+			outputs: []parser.Event{
+				{
+					Project:   "nexa",
+					Activity:  "development",
+					Tags:      []string{"neubot"},
+					Persons:   []string{},
+					StartTime: mustParseTime(t, "2017-11-03T10:00:00+01:00"),
+					Duration:  time.Hour,
+				},
+			},
+			err: nil,
+		},
+
+		{
 			name: "filter by project with no matches",
 			config: &Config{
 				Project: "nonexistent",

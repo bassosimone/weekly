@@ -23,6 +23,9 @@ type Config struct {
 	// Project is the OPTIONAL project to filter the events for.
 	Project string
 
+	// Tag is the OPTIONAL tag to filter the events for.
+	Tag string
+
 	// Total OPTIONALLY sums the total time by project.
 	Total bool
 }
@@ -31,6 +34,9 @@ type Config struct {
 func Run(config *Config, events []parser.Event) ([]parser.Event, error) {
 	// Maybe filter events by project
 	events = maybeFilterByProject(config.Project, events)
+
+	// Maybe filter events by tag
+	events = maybeFilterByTag(config.Tag, events)
 
 	// Maybe create daily or monthly aggregates
 	events, err := maybeAggregate(config.Aggregate, events)
@@ -47,6 +53,15 @@ func Run(config *Config, events []parser.Event) ([]parser.Event, error) {
 func maybeFilterByProject(project string, inputs []parser.Event) (outputs []parser.Event) {
 	for _, ev := range inputs {
 		if project == "" || ev.Project == project {
+			outputs = append(outputs, ev)
+		}
+	}
+	return
+}
+
+func maybeFilterByTag(tag string, inputs []parser.Event) (outputs []parser.Event) {
+	for _, ev := range inputs {
+		if tag == "" || slices.Contains(ev.Tags, tag) {
 			outputs = append(outputs, ev)
 		}
 	}

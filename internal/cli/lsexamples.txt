@@ -34,5 +34,13 @@ You can also compute the total in the aggregation period:
 
   weekly ls --total
 
+You can also filter by project:
+
+  weekly ls --project mlab
+
+You can also filter by tag:
+
+  weekly ls --tag neubot
+
 The `invoice` format is a simplified CSV format suitable
 for generating invoices.
