@@ -83,7 +83,7 @@ Use:
 $HOME/go/bin/weekly ls --help
 ```
 
-or read [lsexamples.md](internal/cli/lsexamples.md) to
+or read [lsexamples.txt](internal/cli/lsexamples.txt) to
 see additional `weekly ls` usage examples.
 
 Use `weekly --help` to get interactive help:

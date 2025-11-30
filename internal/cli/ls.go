@@ -18,7 +18,7 @@ import (
 	"github.com/bassosimone/weekly/internal/pipeline"
 )
 
-//go:embed lsexamples.md
+//go:embed lsexamples.txt
 var lsExamplesData string
 
 // lsMain is the main entry point for the `ls` leaf command.
