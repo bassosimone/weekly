@@ -50,7 +50,7 @@ func lsMain(ctx context.Context, args *clip.CommandArgs[*execEnv]) error {
 	)
 
 	// Add the --aggregate
-	fset.StringFlagVar(&pconfig.Aggregate, "aggregate", 0, "Aggregate entries (daily or monthly).")
+	fset.StringFlagVar(&pconfig.Aggregate, "aggregate", 0, "Aggregate entries (daily, weekly, or monthly).")
 
 	// Add the --config-dir flag
 	fset.StringFlagVar(&configDir, "config-dir", 0, "Directory containing the configuration.")

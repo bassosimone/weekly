@@ -24,6 +24,10 @@ You can aggregate daily and by project with `--aggregate`:
 
     weekly ls --days 3 --aggregate daily
 
+You can also aggregate weekly:
+
+    weekly ls --days 7 --aggregate weekly
+
 You can also aggregate monthly:
 
     weekly ls --days 60 --aggregate monthly

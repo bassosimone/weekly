@@ -53,16 +53,40 @@ func maybeFilterByProject(project string, inputs []parser.Event) (outputs []pars
 	return
 }
 
+// getMondayOfWeek translates an arbitrary date to the week Monday date.
+func getMondayOfWeek(t time.Time) time.Time {
+	// 1. Calculate how many days we are past Monday.
+	// Go treats Sunday as 0. We need to normalize so Monday is 0 and Sunday is 6.
+	offset := (int(t.Weekday()) + 6) % 7
+
+	// 2. Subtract that offset to get back to Monday
+	monday := t.AddDate(0, 0, -offset)
+
+	// 3. Return the time at midnight (00:00:00) for that date
+	return time.Date(monday.Year(), monday.Month(), monday.Day(), 0, 0, 0, 0, t.Location())
+}
+
 func maybeAggregate(policy string, inputs []parser.Event) (outputs []parser.Event, err error) {
 	// Honor the policy
 	var timeFormat string
+	timeRemapper := func(t time.Time) time.Time {
+		return t
+	}
+
 	switch policy {
 	case "":
 		return inputs, nil
+
 	case "daily":
 		timeFormat = "2006-01-02"
+
+	case "weekly":
+		timeFormat = "2006-01-02"
+		timeRemapper = getMondayOfWeek
+
 	case "monthly":
 		timeFormat = "2006-01"
+
 	default:
 		return nil, fmt.Errorf("invalid aggregation policy: %s (valid values: daily, monthly)", policy)
 	}
@@ -70,7 +94,7 @@ func maybeAggregate(policy string, inputs []parser.Event) (outputs []parser.Even
 	// Aggregate by time period, project
 	sums := make(map[string]map[string]time.Duration)
 	for _, ev := range inputs {
-		timeKey := ev.StartTime.Format(timeFormat)
+		timeKey := timeRemapper(ev.StartTime).Format(timeFormat)
 		if sums[timeKey] == nil {
 			sums[timeKey] = make(map[string]time.Duration)
 		}

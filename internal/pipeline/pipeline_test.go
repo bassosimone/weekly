@@ -276,6 +276,66 @@ func TestRun(t *testing.T) {
 		},
 
 		{
+			name: "aggregate weekly",
+			config: &Config{
+				Aggregate: "weekly",
+			},
+			inputs: []parser.Event{
+				{
+					Project:   "nexa",
+					Activity:  "development",
+					Tags:      []string{"neubot"},
+					Persons:   []string{},
+					StartTime: mustParseTime(t, "2017-11-21T10:00:00+01:00"),
+					Duration:  time.Hour,
+				},
+				{
+					Project:   "nexa",
+					Activity:  "development",
+					Tags:      []string{"neubot"},
+					Persons:   []string{},
+					StartTime: mustParseTime(t, "2017-11-23T14:00:00+01:00"),
+					Duration:  5 * time.Hour,
+				},
+				{
+					Project:   "mlab",
+					Activity:  "meeting",
+					Tags:      []string{"staff"},
+					Persons:   []string{"alice"},
+					StartTime: mustParseTime(t, "2017-11-24T11:30:00+01:00"),
+					Duration:  30 * time.Minute,
+				},
+				{
+					Project:   "mlab",
+					Activity:  "development",
+					Tags:      []string{"iqb"},
+					Persons:   []string{},
+					StartTime: mustParseTime(t, "2017-11-25T11:30:00+01:00"),
+					Duration:  4 * time.Hour,
+				},
+			},
+			outputs: []parser.Event{
+				{
+					Project:   "mlab",
+					Activity:  "",
+					Tags:      nil,
+					Persons:   nil,
+					StartTime: mustParseTime(t, "2017-11-20T00:00:00+00:00"),
+					Duration:  4*time.Hour + 30*time.Minute,
+				},
+				{
+					Project:   "nexa",
+					Activity:  "",
+					Tags:      nil,
+					Persons:   nil,
+					StartTime: mustParseTime(t, "2017-11-20T00:00:00+00:00"),
+					Duration:  6 * time.Hour,
+				},
+			},
+			err: nil,
+		},
+
+		{
 			name: "aggregate monthly",
 			config: &Config{
 				Aggregate: "monthly",
