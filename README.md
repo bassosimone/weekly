@@ -19,7 +19,8 @@ $ weekly ls --aggregate weekly --days 5
 
 See [sessionexample.md](docs/sessionexample.md) for an example
 of a typical user session. See [tutorial.md](internal/cli/tutorial.md)
-for details about how to format your calendar entries for tracking.
+for details about how to format your calendar entries using several
+output formats (including JSON and CSV).
 
 ## Install
 
