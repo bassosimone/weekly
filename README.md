@@ -18,9 +18,8 @@ $ weekly ls --aggregate weekly --days 5
 ```
 
 See [sessionexample.md](docs/sessionexample.md) for an example
-of a typical session where I am using `weekly` to track my time usage.
-See [tutorial.md](internal/cli/tutorial.md) for details about how
-to format your calendar entries for tracking.
+of a typical user session. See [tutorial.md](internal/cli/tutorial.md)
+for details about how to format your calendar entries for tracking.
 
 ## Install
 
