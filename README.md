@@ -1,14 +1,26 @@
-![Mascot](docs/weekly.png)
+# Track Activities using Google Calendar
 
 [![Build Status](https://github.com/bassosimone/weekly/actions/workflows/go.yml/badge.svg)](https://github.com/bassosimone/weekly/actions) [![codecov](https://codecov.io/gh/bassosimone/weekly/branch/master/graph/badge.svg)](https://codecov.io/gh/bassosimone/weekly)
 
-Track your weekly activities using [Google Calendar](https://calendar.google.com/).
+Track your (weekly) activities using [Google Calendar](https://calendar.google.com/).
 
-See [tutorial.md](internal/cli/tutorial.md) for details about how
-to format your calendar entries for tracking.
+Here's a teaser:
+
+```
+$ weekly ls --aggregate weekly --days 5
+┌──────────────────┬────────┬──────────┬──────────┬──────┬─────────┐
+│    START TIME    │ HOURS  │ PROJECT  │ ACTIVITY │ TAGS │ PERSONS │
+├──────────────────┼────────┼──────────┼──────────┼──────┼─────────┤
+│ 2025-11-17 00:00 │ 8.2    │ nexa     │          │      │         │
+│ 2025-11-17 00:00 │ 16.0   │ mlab     │          │      │         │
+│ 2025-11-22 00:00 │ 1.0    │ personal │          │      │         │
+└──────────────────┴────────┴──────────┴──────────┴──────┴─────────┘
+```
 
 See [sessionexample.md](docs/sessionexample.md) for an example
 of a typical session where I am using `weekly` to track my time usage.
+See [tutorial.md](internal/cli/tutorial.md) for details about how
+to format your calendar entries for tracking.
 
 ## Install
 
