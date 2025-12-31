@@ -7,11 +7,11 @@ import (
 	"context"
 	_ "embed"
 	"fmt"
+	"strings"
 	"time"
 
-	"github.com/bassosimone/clip"
-	"github.com/bassosimone/clip/pkg/assert"
-	"github.com/bassosimone/clip/pkg/nflag"
+	"github.com/bassosimone/runtimex"
+	"github.com/bassosimone/vflag"
 	"github.com/bassosimone/weekly/internal/calendarapi"
 	"github.com/bassosimone/weekly/internal/output"
 	"github.com/bassosimone/weekly/internal/parser"
@@ -21,24 +21,24 @@ import (
 //go:embed lsexamples.txt
 var lsExamplesData string
 
+// lsBriefDescription is the `ls` leaf command brief description.
+const lsBriefDescription = "List events from the selected calendar."
+
 // lsMain is the main entry point for the `ls` leaf command.
-func lsMain(ctx context.Context, args *clip.CommandArgs[*execEnv]) error {
+func lsMain(ctx context.Context, args []string) error {
 	// Create flag set
-	fset := nflag.NewFlagSet(args.CommandName, nflag.ExitOnError)
-	fset.Description = args.Command.BriefDescription()
-	fset.PositionalArgumentsUsage = ""
-	fset.MinPositionalArgs = 0
-	fset.MaxPositionalArgs = 0
-	fset.Examples = lsExamplesData
+	fset := vflag.NewFlagSet("weekly ls", vflag.ExitOnError)
+	fset.AddDescription(lsBriefDescription)
+	fset.AddExamples(strings.Split(lsExamplesData, "\n\n")...)
 
 	// Not strictly needed in production but necessary for testing
-	fset.Exit = args.Env.Exit
-	fset.Stderr = args.Env.Stderr()
-	fset.Stdout = args.Env.Stdout()
+	fset.Exit = env.Exit
+	fset.Stderr = env.Stderr
+	fset.Stdout = env.Stdout
 
 	// Create default values for flags
 	var (
-		configDir = xdgConfigHome(args.Env)
+		configDir = xdgConfigHome(env)
 		days      = int64(1)
 		format    = "box"
 		maxEvents = int64(4096)
@@ -51,40 +51,40 @@ func lsMain(ctx context.Context, args *clip.CommandArgs[*execEnv]) error {
 	)
 
 	// Add the --aggregate
-	fset.StringFlagVar(&pconfig.Aggregate, "aggregate", 0, "Aggregate entries (daily, weekly, or monthly).")
+	fset.StringVar(&pconfig.Aggregate, 0, "aggregate", "Aggregate entries (daily, weekly, or monthly).")
 
 	// Add the --config-dir flag
-	fset.StringFlagVar(&configDir, "config-dir", 0, "Directory containing the configuration.")
+	fset.StringVar(&configDir, 0, "config-dir", "Directory containing the configuration.")
 
 	// Add the --days flag
-	fset.Int64FlagVar(&days, "days", 0, "Number of days in the past to fetch.")
+	fset.Int64Var(&days, 0, "days", "Number of days in the past to fetch.")
 
 	// Add the --format flag
-	fset.StringFlagVar(&format, "format", 0, "Format to emit output: box (default), csv, invoice, json.")
+	fset.StringVar(&format, 0, "format", "Format to emit output: box, csv, invoice, json.")
 
 	// Add the --help flag
-	fset.AutoHelp("help", 'h', "Print this help message and exit.")
+	fset.AutoHelp('h', "help", "Print this help message and exit.")
 
 	// Add the --max-events flag
-	fset.Int64FlagVar(&maxEvents, "max-events", 0, "Set maximum number of events to fetch.")
+	fset.Int64Var(&maxEvents, 0, "max-events", "Set maximum number of events to fetch.")
 
 	// Add the --project flag
-	fset.StringFlagVar(&pconfig.Project, "project", 0, "Only show data for the given project.")
+	fset.StringVar(&pconfig.Project, 0, "project", "Only show data for the given project.")
 
 	// Add the --tag flag
-	fset.StringFlagVar(&pconfig.Tag, "tag", 0, "Only show data for the given tag.")
+	fset.StringVar(&pconfig.Tag, 0, "tag", "Only show data for the given tag.")
 
 	// Add the --total flag
-	fset.BoolFlagVar(&pconfig.Total, "total", 0, "Compute total amount of hours worked.")
+	fset.BoolVar(&pconfig.Total, 0, "total", "Compute total amount of hours worked.")
 
 	// Parse the flags
-	assert.NotError(fset.Parse(args.Args))
+	runtimex.PanicOnError0(fset.Parse(args))
 
 	// Create calendar API client
-	client := must1(env.NewCalendarClient(ctx, credentialsPath(configDir)))
+	client := runtimex.LogFatalOnError1(env.NewCalendarClient(ctx, credentialsPath(configDir)))
 
 	// Load the calendar ID to use
-	cinfo := must1(readCalendarInfo(env, calendarPath(configDir)))
+	cinfo := runtimex.LogFatalOnError1(readCalendarInfo(env, calendarPath(configDir)))
 
 	// Compute start time and end time
 	startTime, endTime := lsDaysToTimeInterval(days)
@@ -96,24 +96,24 @@ func lsMain(ctx context.Context, args *clip.CommandArgs[*execEnv]) error {
 		EndTime:    endTime,
 		MaxEvents:  maxEvents,
 	}
-	rawEvents := must1(client.FetchEvents(ctx, &config))
-	events := must1(parser.Parse(rawEvents))
+	rawEvents := runtimex.LogFatalOnError1(client.FetchEvents(ctx, &config))
+	events := runtimex.LogFatalOnError1(parser.Parse(rawEvents))
 
 	// Maybe emit warning depending on the number of events
 	lsMaybeWarnOnEventsNumber(maxEvents, events)
 
 	// Run the events processing pipeline
-	events = must1(pipeline.Run(&pconfig, events))
+	events = runtimex.LogFatalOnError1(pipeline.Run(&pconfig, events))
 
 	// Format and print the weekly-calendar events
-	must0(env, output.Write(env.Stdout(), format, events))
+	runtimex.LogFatalOnError0(output.Write(env.Stdout, format, events))
 	return nil
 }
 
 func lsMaybeWarnOnEventsNumber(maxEvents int64, events []parser.Event) {
 	if int64(len(events)) >= maxEvents {
-		fmt.Fprintf(env.Stderr(), "warning: reached maximum number of events to query (%d)\n", maxEvents)
-		fmt.Fprintf(env.Stderr(), "warning: try increasing the limit using `--max-events`\n")
+		fmt.Fprintf(env.Stderr, "warning: reached maximum number of events to query (%d)\n", maxEvents)
+		fmt.Fprintf(env.Stderr, "warning: try increasing the limit using `--max-events`\n")
 	}
 }
 

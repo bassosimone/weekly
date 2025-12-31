@@ -6,12 +6,13 @@ package cli
 import (
 	"path/filepath"
 
+	"github.com/bassosimone/runtimex"
 	"github.com/bassosimone/weekly/internal/xdg"
 )
 
 // xdgConfigHome returns the directory containing config.
 func xdgConfigHome(env xdg.ExecEnv) string {
-	return must1(xdg.ConfigHome(env))
+	return runtimex.LogFatalOnError1(xdg.ConfigHome(env))
 }
 
 // calendarPath returns the calendar.json path within configDir.

@@ -99,7 +99,7 @@ func TestReadCalendarInfo(t *testing.T) {
 
 			// create test environment
 			env = newExecEnv()
-			env.lockedfileRead = tc.lockedfileRead
+			env.LockedfileRead = tc.lockedfileRead
 
 			// execute the function under test
 			info, err := readCalendarInfo(env, tc.path)
@@ -226,7 +226,7 @@ func TestWriteCalendarInfo(t *testing.T) {
 
 			// create test environment
 			env = newExecEnv()
-			env.lockedfileWrite = tc.lockedfileWrite
+			env.LockedfileWrite = tc.lockedfileWrite
 
 			// execute the function under test
 			err := writeCalendarInfo(env, tc.path, tc.info)

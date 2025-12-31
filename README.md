@@ -12,7 +12,7 @@ of a typical session where I am using `weekly` to track my time usage.
 
 ## Install
 
-1. You need Go >= 1.24
+1. You need Go >= 1.25
 
 2. Install this tool
 
@@ -126,7 +126,7 @@ The `weekly` tools exits with `0` on success and nonzero on failure.
 
 ## Build From Source
 
-You need Go >= 1.24. Run these commands:
+You need Go >= 1.25. Run these commands:
 
 ```bash
 git clone git@github.com/bassosimone/weekly
@@ -142,9 +142,12 @@ The `./weekly` binary will be created in the current directory.
 SPDX-License-Identifier: GPL-3.0-or-later
 ```
 
-## Dependencies
+## Direct Dependencies
 
-- [github.com/bassosimone/clip](https://pkg.go.dev/github.com/bassosimone/clip)
+- [github.com/bassosimone/must](https://pkg.go.dev/github.com/bassosimone/must)
+- [github.com/bassosimone/runtimex](https://pkg.go.dev/github.com/bassosimone/runtimex)
+- [github.com/bassosimone/vclip](https://pkg.go.dev/github.com/bassosimone/vclip)
+- [github.com/bassosimone/vflag](https://pkg.go.dev/github.com/bassosimone/vflag)
 - [github.com/google/go-cmp](https://pkg.go.dev/github.com/google/go-cmp)
 - [github.com/olekukonko/tablewriter](https://pkg.go.dev/github.com/olekukonko/tablewriter)
 - [github.com/rogpeppe/go-internal](https://pkg.go.dev/github.com/rogpeppe/go-internal)

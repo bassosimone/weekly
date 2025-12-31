@@ -8,54 +8,63 @@ import (
 	"context"
 	"io"
 	"io/fs"
+	"os"
 	"runtime/debug"
 
-	"github.com/bassosimone/clip"
-	"github.com/bassosimone/clip/pkg/nflag"
+	"github.com/bassosimone/vclip"
+	"github.com/bassosimone/vflag"
 	"github.com/bassosimone/weekly/internal/calendarapi"
 	"github.com/rogpeppe/go-internal/lockedfile"
 )
 
 // execEnv is the execution environment used by this tool.
 type execEnv struct {
-	// We embed a [*clip.StdlibExecEnv]
-	*clip.StdlibExecEnv
+	// Args is initialized with [os.Args].
+	Args []string
 
-	// lockedfileRead allows mocking calls to [lockedfile.Read].
-	lockedfileRead func(path string) ([]byte, error)
+	// Exit is initialized with [os.Exit].
+	Exit func(exitcode int)
 
-	// lockedfileWrite allows mocking calls to [lockedfile.Write].
-	lockedfileWrite func(path string, content io.Reader, perms fs.FileMode) error
+	// LockedfileRead is initialized with [lockedfile.Read].
+	LockedfileRead func(path string) ([]byte, error)
 
-	// newCalendarClient constructs a new [calendarapi.Client].
-	newCalendarClient func(ctx context.Context, credentialsPath string) (calendarapi.Client, error)
+	// LockedfileWrite is initialized with [lockedfile.Write].
+	LockedfileWrite func(path string, content io.Reader, perms fs.FileMode) error
+
+	// lookupEnv is initialized with [os.LookupEnv].
+	lookupEnv func(key string) (string, bool)
+
+	// NewCalendarClient constructs a new [calendarapi.Client].
+	NewCalendarClient func(ctx context.Context, credentialsPath string) (calendarapi.Client, error)
+
+	// Stderr is initialized with [os.Stderr].
+	Stderr io.Writer
+
+	// OSStdout is initialized with [os.Stdout].
+	Stdout io.Writer
+
+	// OSStdin is initialized with [os.Stdin].
+	Stdin io.Reader
 }
-
-var _ clip.ExecEnv = &execEnv{}
 
 // newExecEnv constructs a new instance of [*execEnv].
 func newExecEnv() *execEnv {
 	return &execEnv{
-		StdlibExecEnv:     clip.NewStdlibExecEnv(),
-		lockedfileRead:    lockedfile.Read,
-		lockedfileWrite:   lockedfile.Write,
-		newCalendarClient: calendarapi.NewClient,
+		Args:              os.Args,
+		Exit:              os.Exit,
+		LockedfileRead:    lockedfile.Read,
+		LockedfileWrite:   lockedfile.Write,
+		lookupEnv:         os.LookupEnv,
+		NewCalendarClient: calendarapi.NewClient,
+		Stderr:            os.Stderr,
+		Stdout:            os.Stdout,
+		Stdin:             os.Stdin,
 	}
 }
 
-// LockedfileRead is equivalent to [lockedfile.Read].
-func (env *execEnv) LockedfileRead(path string) ([]byte, error) {
-	return env.lockedfileRead(path)
-}
-
-// LockedfileWrite is equivalent to [lockedfile.Write].
-func (env *execEnv) LockedfileWrite(path string, content io.Reader, perms fs.FileMode) error {
-	return env.lockedfileWrite(path, content, perms)
-}
-
-// NewCalendarClient constructs a new [calendarapi.Client] instance.
-func (env *execEnv) NewCalendarClient(ctx context.Context, credentialsPath string) (calendarapi.Client, error) {
-	return env.newCalendarClient(ctx, credentialsPath)
+// LookupEnv calls the lookupEnv function.
+func (ee *execEnv) LookupEnv(key string) (string, bool) {
+	return ee.lookupEnv(key)
 }
 
 var (
@@ -92,41 +101,25 @@ func init() {
 
 // Main is the main function of the CLI implementation.
 func Main() {
+	// Create the dispatcher command
+	disp := vclip.NewDispatcherCommand("weekly", vflag.ExitOnError)
+	disp.AddDescription("Track weekly activity using Google Calendar.")
+	disp.Version = version
+
+	// Not strictly needed in production but necessary for testing
+	disp.Exit = env.Exit
+	disp.Stdout = env.Stdout
+	disp.Stderr = env.Stderr
+
 	// Create the `init` leaf command
-	initCmd := &clip.LeafCommand[*execEnv]{
-		BriefDescriptionText: "Initialize and select the calendar to use.",
-		RunFunc:              initMain,
-	}
+	disp.AddCommand("init", vclip.CommandFunc(initMain), initBriefDescription)
 
 	// Create the `ls` leaf command
-	lsCmd := &clip.LeafCommand[*execEnv]{
-		BriefDescriptionText: "List events from the selected calendar.",
-		RunFunc:              lsMain,
-	}
+	disp.AddCommand("ls", vclip.CommandFunc(lsMain), lsBriefDescription)
 
 	// Create the `tutorial` leaf command
-	tutorialCmd := &clip.LeafCommand[*execEnv]{
-		BriefDescriptionText: "Show detailed tutorial explaining the tool usage.",
-		RunFunc:              tutorialMain,
-	}
-
-	// Create the root command
-	rootCmd := &clip.RootCommand[*execEnv]{
-		Command: &clip.DispatcherCommand[*execEnv]{
-			BriefDescriptionText: "Track weekly activity using Google Calendar.",
-			Commands: map[string]clip.Command[*execEnv]{
-				"init":     initCmd,
-				"ls":       lsCmd,
-				"tutorial": tutorialCmd,
-			},
-			ErrorHandling:             nflag.ExitOnError,
-			Version:                   version,
-			OptionPrefixes:            []string{"-", "--"},
-			OptionsArgumentsSeparator: "--",
-		},
-		AutoCancel: true,
-	}
+	disp.AddCommand("tutorial", vclip.CommandFunc(tutorialMain), tutorialBriefDescription)
 
 	// Execute the root command
-	rootCmd.Main(env)
+	vclip.Main(context.Background(), disp, env.Args[1:])
 }

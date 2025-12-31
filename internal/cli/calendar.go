@@ -7,6 +7,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+
+	"github.com/bassosimone/runtimex"
 )
 
 // calendarInfo contains the selected calendar info.
@@ -30,5 +32,5 @@ func readCalendarInfo(env *execEnv, path string) (*calendarInfo, error) {
 
 // writeCalendarInfo writes [*calendarInfo] to the given filePath.
 func writeCalendarInfo(env *execEnv, path string, info *calendarInfo) error {
-	return env.LockedfileWrite(path, bytes.NewReader(must1(json.Marshal(info))), 0600)
+	return env.LockedfileWrite(path, bytes.NewReader(runtimex.PanicOnError1(json.Marshal(info))), 0600)
 }

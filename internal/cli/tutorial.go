@@ -6,37 +6,36 @@ package cli
 import (
 	"context"
 	_ "embed"
-	"fmt"
 
-	"github.com/bassosimone/clip"
-	"github.com/bassosimone/clip/pkg/assert"
-	"github.com/bassosimone/clip/pkg/nflag"
+	"github.com/bassosimone/must"
+	"github.com/bassosimone/runtimex"
+	"github.com/bassosimone/vflag"
 )
 
 //go:embed tutorial.md
 var tutorialData string
 
+// tutorialBriefDescription is the `tutorial` leaf command brief description.
+const tutorialBriefDescription = "Show detailed tutorial explaining the tool usage."
+
 // tutorialMain is the main entry point for the `tutorial` leaf command.
-func tutorialMain(ctx context.Context, args *clip.CommandArgs[*execEnv]) error {
+func tutorialMain(ctx context.Context, args []string) error {
 	// Create flag set
-	fset := nflag.NewFlagSet(args.CommandName, nflag.ExitOnError)
-	fset.Description = args.Command.BriefDescription()
-	fset.PositionalArgumentsUsage = ""
-	fset.MinPositionalArgs = 0
-	fset.MaxPositionalArgs = 0
+	fset := vflag.NewFlagSet("weekly tutorial", vflag.ExitOnError)
+	fset.AddDescription(tutorialBriefDescription)
 
 	// Not strictly needed in production but necessary for testing
-	fset.Exit = args.Env.Exit
-	fset.Stderr = args.Env.Stderr()
-	fset.Stdout = args.Env.Stdout()
+	fset.Exit = env.Exit
+	fset.Stderr = env.Stderr
+	fset.Stdout = env.Stdout
 
 	// Add the --help flag
-	fset.AutoHelp("help", 'h', "Print this help message and exit.")
+	fset.AutoHelp('h', "help", "Print this help message and exit.")
 
 	// Parse the flags
-	assert.NotError(fset.Parse(args.Args))
+	runtimex.PanicOnError0(fset.Parse(args))
 
 	// Print the tutorial data to stdout
-	fmt.Fprintf(args.Env.Stdout(), "%s", tutorialData)
+	must.Fprintf(env.Stdout, "%s", tutorialData)
 	return nil
 }
