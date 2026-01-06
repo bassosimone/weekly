@@ -5,7 +5,7 @@ go 1.25.5
 require (
 	github.com/bassosimone/must v0.0.0-20260102142322-b47a2e584c2b
 	github.com/bassosimone/runtimex v0.0.0-20251217192325-70882b9ab4d3
-	github.com/bassosimone/vclip v0.0.0-20260106210609-c729e19a820c
+	github.com/bassosimone/vclip v0.0.0-20260106212427-c9f37d5d9459
 	github.com/bassosimone/vflag v0.0.0-20260106190442-c5e62596f204
 	github.com/google/go-cmp v0.7.0
 	github.com/olekukonko/tablewriter v1.1.2
