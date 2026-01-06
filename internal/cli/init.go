@@ -18,7 +18,9 @@ const initBriefDescription = "Initialize and select the calendar to use."
 func initMain(ctx context.Context, args []string) error {
 	// Create flag set
 	fset := vflag.NewFlagSet("weekly init", vflag.ExitOnError)
-	fset.AddDescription(initBriefDescription)
+	usage := vflag.NewDefaultUsagePrinter()
+	usage.AddDescription(initBriefDescription)
+	fset.UsagePrinter = usage
 
 	// Not strictly needed in production but necessary for testing
 	fset.Exit = env.Exit

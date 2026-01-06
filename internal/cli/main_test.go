@@ -209,7 +209,7 @@ var expectedWeeklyHelpLsOutput = []string{
 	"",
 	"        Only show data for the given tag.",
 	"",
-	"    --total[=BOOL] (default: `false`)",
+	"    --total[=true|false] (default: `false`)",
 	"",
 	"        Compute total amount of hours worked.",
 	"",
@@ -402,7 +402,7 @@ func TestMain(t *testing.T) {
 			stdoutLines: []string{""},
 			stderrLines: []string{
 				"weekly: command not found: --invalid-flag",
-				"hint: use `weekly --help' to see the available commands",
+				"weekly: use `weekly --help' to see the available commands",
 				"",
 			},
 			exitCode: 2,
@@ -414,7 +414,7 @@ func TestMain(t *testing.T) {
 			stdoutLines: []string{""},
 			stderrLines: []string{
 				"weekly: command not found: invalid-command",
-				"hint: use `weekly --help' to see the available commands",
+				"weekly: use `weekly --help' to see the available commands",
 				"",
 			},
 			exitCode: 2,

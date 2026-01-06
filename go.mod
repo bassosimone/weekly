@@ -3,16 +3,16 @@ module github.com/bassosimone/weekly
 go 1.25.5
 
 require (
-	github.com/bassosimone/must v0.0.0-20251230231710-cc7c7ac561be
+	github.com/bassosimone/must v0.0.0-20260102142322-b47a2e584c2b
 	github.com/bassosimone/runtimex v0.0.0-20251217192325-70882b9ab4d3
-	github.com/bassosimone/vclip v0.0.0-20251231121728-aec369448cf5
-	github.com/bassosimone/vflag v0.0.0-20251231121509-39afe7ae897e
+	github.com/bassosimone/vclip v0.0.0-20260106193618-2db1331b768f
+	github.com/bassosimone/vflag v0.0.0-20260106190442-c5e62596f204
 	github.com/google/go-cmp v0.7.0
 	github.com/olekukonko/tablewriter v1.1.2
 	github.com/rogpeppe/go-internal v1.14.1
 	github.com/stretchr/testify v1.11.1
 	golang.org/x/oauth2 v0.34.0
-	google.golang.org/api v0.258.0
+	google.golang.org/api v0.259.0
 )
 
 require (

@@ -22,7 +22,9 @@ const tutorialBriefDescription = "Show detailed tutorial explaining the tool usa
 func tutorialMain(ctx context.Context, args []string) error {
 	// Create flag set
 	fset := vflag.NewFlagSet("weekly tutorial", vflag.ExitOnError)
-	fset.AddDescription(tutorialBriefDescription)
+	usage := vflag.NewDefaultUsagePrinter()
+	usage.AddDescription(tutorialBriefDescription)
+	fset.UsagePrinter = usage
 
 	// Not strictly needed in production but necessary for testing
 	fset.Exit = env.Exit

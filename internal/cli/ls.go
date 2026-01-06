@@ -28,8 +28,10 @@ const lsBriefDescription = "List events from the selected calendar."
 func lsMain(ctx context.Context, args []string) error {
 	// Create flag set
 	fset := vflag.NewFlagSet("weekly ls", vflag.ExitOnError)
-	fset.AddDescription(lsBriefDescription)
-	fset.AddExamples(strings.Split(lsExamplesData, "\n\n")...)
+	usage := vflag.NewDefaultUsagePrinter()
+	usage.AddDescription(lsBriefDescription)
+	usage.AddExamples(strings.Split(lsExamplesData, "\n\n")...)
+	fset.UsagePrinter = usage
 
 	// Not strictly needed in production but necessary for testing
 	fset.Exit = env.Exit
