@@ -72,7 +72,7 @@ func writeFormatBox(w io.Writer, events []parser.Event) error {
 	for _, ev := range events {
 		data = append(data, []any{
 			ev.StartTime.Format("2006-01-02 15:04"),
-			fmt.Sprintf("%6.1f", ev.Duration.Hours()),
+			fmt.Sprintf("%6.2f", ev.Duration.Hours()),
 			ev.Project,
 			ev.Activity,
 			strings.Join(ev.Tags, " "),
