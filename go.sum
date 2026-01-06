@@ -16,8 +16,8 @@ github.com/bassosimone/runtimex v0.0.0-20251217192325-70882b9ab4d3 h1:NHcu1geY9W
 github.com/bassosimone/runtimex v0.0.0-20251217192325-70882b9ab4d3/go.mod h1:GDr46yuJzuDkzOMI1/9Voo3s7VmYBU/6pkuaI5FR7gE=
 github.com/bassosimone/textwrap v0.0.0-20251230023300-aabed485c498 h1:R7F7UMhOkAbFmUHloP9N9Wjvyq45WSjvQ4DXr99Hd4U=
 github.com/bassosimone/textwrap v0.0.0-20251230023300-aabed485c498/go.mod h1:SroxjmxXkIVaeta+FgkXfDe0NJQ8of3HOTevtTvLsKA=
-github.com/bassosimone/vclip v0.0.0-20260106193618-2db1331b768f h1:FkSK9CeQcA+TTRskuV+BMtWncCUff3Qpq/qhbVpFAtY=
-github.com/bassosimone/vclip v0.0.0-20260106193618-2db1331b768f/go.mod h1:XktzvZDUg5uvIpvhXL6dbNR4x/8XgYBY7v36TyJj2O8=
+github.com/bassosimone/vclip v0.0.0-20260106210609-c729e19a820c h1:+dKiMbdPnamhIe/jfRJepAKtC18urrJRaSaRuU5STh0=
+github.com/bassosimone/vclip v0.0.0-20260106210609-c729e19a820c/go.mod h1:XktzvZDUg5uvIpvhXL6dbNR4x/8XgYBY7v36TyJj2O8=
 github.com/bassosimone/vflag v0.0.0-20260106190442-c5e62596f204 h1:GQe8/2nJ9mNlLCrErGDvE7ZPKedsIvlQONQLZHkaSck=
 github.com/bassosimone/vflag v0.0.0-20260106190442-c5e62596f204/go.mod h1:6qo/D6+KlL3nhikco2qwKbEghSN1/QtORjKnvN9/IUU=
 github.com/cespare/xxhash/v2 v2.3.0 h1:UL815xU9SqsFlibzuggzjXhog7bL6oX9BbNZnL2UFvs=
