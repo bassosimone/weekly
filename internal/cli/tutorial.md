@@ -25,5 +25,4 @@ We use the above convention to semantically tag events.
 
 Any additional token will be ignored.
 
-Refer to `weekly ls --help` for help about reading the calendar
-or read [lsexamples.txt](lsexamples.txt) directly.
+Refer to `weekly ls --help` for help about reading calendar events.
