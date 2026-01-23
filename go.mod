@@ -3,10 +3,10 @@ module github.com/bassosimone/weekly
 go 1.25.5
 
 require (
-	github.com/bassosimone/must v0.0.0-20260108162644-b30ccdaf25aa
+	github.com/bassosimone/must v0.0.0-20260118074942-4ad662f6c302
 	github.com/bassosimone/runtimex v0.0.0-20260108162100-336f3823f6b7
 	github.com/bassosimone/vclip v0.0.0-20260108163413-974f45b8631c
-	github.com/bassosimone/vflag v0.0.0-20260108163221-d4fde165a93d
+	github.com/bassosimone/vflag v0.0.0-20260123141153-dddfbd91fbe2
 	github.com/google/go-cmp v0.7.0
 	github.com/olekukonko/tablewriter v1.1.3
 	github.com/rogpeppe/go-internal v1.14.1
@@ -21,7 +21,7 @@ require (
 	cloud.google.com/go/compute/metadata v0.9.0 // indirect
 	github.com/bassosimone/flagparser v0.0.0-20260108162306-26de65ccd6f3 // indirect
 	github.com/bassosimone/flagscanner v0.0.0-20260108162002-6d1877e940ce // indirect
-	github.com/bassosimone/textwrap v0.0.0-20260108195239-92ec591d9770 // indirect
+	github.com/bassosimone/textwrap v0.0.0-20260116080944-4f25bc1114c3 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/clipperhouse/displaywidth v0.7.0 // indirect
 	github.com/clipperhouse/stringish v0.1.1 // indirect

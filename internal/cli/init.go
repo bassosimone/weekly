@@ -33,7 +33,13 @@ func initMain(ctx context.Context, args []string) error {
 	)
 
 	// Add the --config-dir flag
-	fset.StringVar(&configDir, 0, "config-dir", "Directory containing the configuration.")
+	fset.StringVar(
+		&configDir,
+		0,
+		"config-dir",
+		"Select `DIR` containing the configuration.",
+		"Default: `@DEFAULT_VALUE@`.",
+	)
 
 	// Add the --help flag
 	fset.AutoHelp('h', "help", "Print this help message and exit.")

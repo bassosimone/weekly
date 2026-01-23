@@ -52,32 +52,80 @@ func lsMain(ctx context.Context, args []string) error {
 		}
 	)
 
-	// Add the --aggregate
-	fset.StringVar(&pconfig.Aggregate, 0, "aggregate", "Aggregate entries (daily, weekly, or monthly).")
+	// Add the --aggregate flag
+	fset.StringVar(
+		&pconfig.Aggregate,
+		0,
+		"aggregate",
+		"Optionally aggregate entries using a `POLICY`.",
+		"If empty, there's no aggregation.",
+		"Valid policies: daily, weekly, and monthly.",
+		"Default: empty.",
+	)
 
 	// Add the --config-dir flag
-	fset.StringVar(&configDir, 0, "config-dir", "Directory containing the configuration.")
+	fset.StringVar(
+		&configDir,
+		0,
+		"config-dir",
+		"Select `DIR` containing the configuration.",
+		"Default: `@DEFAULT_VALUE@`.",
+	)
 
 	// Add the --days flag
-	fset.Int64Var(&days, 0, "days", "Number of days in the past to fetch.")
+	fset.Int64Var(
+		&days,
+		0,
+		"days",
+		"Number of days in the past to fetch.",
+		"Default: `@DEFAULT_VALUE@`.",
+	)
 
 	// Add the --format flag
-	fset.StringVar(&format, 0, "format", "Format to emit output: box, csv, invoice, json.")
+	fset.StringVar(
+		&format,
+		0,
+		"format",
+		"The `FORMAT` for formatting output.",
+		"Valid values: box, csv, invoice, json.",
+		"Default: `@DEFAULT_VALUE@`.",
+	)
 
 	// Add the --help flag
 	fset.AutoHelp('h', "help", "Print this help message and exit.")
 
 	// Add the --max-events flag
-	fset.Int64Var(&maxEvents, 0, "max-events", "Set maximum number of events to fetch.")
+	fset.Int64Var(
+		&maxEvents,
+		0,
+		"max-events",
+		"Set the maximum number `N` of events to fetch.",
+		"Default: `@DEFAULT_VALUE@`.",
+	)
 
 	// Add the --project flag
-	fset.StringVar(&pconfig.Project, 0, "project", "Only show data for the given project.")
+	fset.StringVar(
+		&pconfig.Project,
+		0,
+		"project",
+		"Only show data for the given `PROJECT`.",
+	)
 
 	// Add the --tag flag
-	fset.StringVar(&pconfig.Tag, 0, "tag", "Only show data for the given tag.")
+	fset.StringVar(
+		&pconfig.Tag,
+		0,
+		"tag",
+		"Only show data for the given `TAG`.",
+	)
 
 	// Add the --total flag
-	fset.BoolVar(&pconfig.Total, 0, "total", "Compute total amount of hours worked.")
+	fset.BoolVar(
+		&pconfig.Total,
+		0,
+		"total",
+		"Compute total amount of hours worked.",
+	)
 
 	// Parse the flags
 	runtimex.PanicOnError0(fset.Parse(args))
