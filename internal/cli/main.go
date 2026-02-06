@@ -104,7 +104,7 @@ func Main() {
 	// Create the dispatcher command
 	disp := vclip.NewDispatcherCommand("weekly", vflag.ExitOnError)
 	disp.AddDescription("Track weekly activity using Google Calendar.")
-	disp.Version = version
+	disp.AddVersionHandlers(version)
 
 	// Not strictly needed in production but necessary for testing
 	disp.Exit = env.Exit
