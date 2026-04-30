@@ -8,9 +8,12 @@ import (
 	"context"
 	"io"
 	"io/fs"
+	"log"
 	"os"
 	"runtime/debug"
 
+	"github.com/bassosimone/deferexit"
+	"github.com/bassosimone/runtimex"
 	"github.com/bassosimone/vclip"
 	"github.com/bassosimone/vflag"
 	"github.com/bassosimone/weekly/internal/calendarapi"
@@ -22,7 +25,9 @@ type execEnv struct {
 	// Args is initialized with [os.Args].
 	Args []string
 
-	// Exit is initialized with [os.Exit].
+	// Exit is initialized with [deferexit.Panic] so that deferred cleanup
+	// runs before the process exits. The outermost main installs
+	// [deferexit.Recover] to convert the panic back to a real os.Exit.
 	Exit func(exitcode int)
 
 	// LockedfileRead is initialized with [lockedfile.Read].
@@ -51,7 +56,7 @@ type execEnv struct {
 func newExecEnv() *execEnv {
 	return &execEnv{
 		Args:              os.Args,
-		Exit:              os.Exit,
+		Exit:              deferexit.Panic,
 		LockedfileRead:    lockedfile.Read,
 		LockedfileWrite:   lockedfile.Write,
 		lookupEnv:         os.LookupEnv,
@@ -99,8 +104,22 @@ func init() {
 	}
 }
 
+// logFatal is the [runtimex.LogFatalFunc] override installed by [Main].
+// It logs the values and raises a [deferexit.Panic] so that deferred
+// cleanup runs before the outermost main converts the panic back into
+// a real os.Exit.
+func logFatal(v ...any) {
+	log.Print(v...)
+	deferexit.Panic(1)
+}
+
 // Main is the main function of the CLI implementation.
 func Main() {
+	// Route runtimex.LogFatalOnError* through a typed panic so deferred
+	// cleanup runs before the process exits. The outermost main installs
+	// [deferexit.Recover] to convert the panic back to a real os.Exit.
+	runtimex.LogFatalFunc = logFatal
+
 	// Create the dispatcher command
 	disp := vclip.NewDispatcherCommand("weekly", vflag.ExitOnError)
 	disp.AddDescription("Track weekly activity using Google Calendar.")

@@ -3,8 +3,9 @@ module github.com/bassosimone/weekly
 go 1.25.5
 
 require (
+	github.com/bassosimone/deferexit v0.0.0-20260430074002-1397452dfab1
 	github.com/bassosimone/must v0.0.0-20260426215741-e0d3e455627c
-	github.com/bassosimone/runtimex v0.0.0-20260426205938-f859235d82e0
+	github.com/bassosimone/runtimex v0.0.0-20260430082757-ec3a7b516e79
 	github.com/bassosimone/vclip v0.0.0-20260426225308-5c636546ddee
 	github.com/bassosimone/vflag v0.0.0-20260426222617-67f3423bcf90
 	github.com/google/go-cmp v0.7.0

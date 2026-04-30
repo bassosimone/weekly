@@ -6,19 +6,20 @@ package cli
 import (
 	"bytes"
 	"context"
-	"errors"
 	"fmt"
 	"io"
 	"io/fs"
+	"log"
 	"maps"
 	"slices"
 	"strings"
 	"sync"
-	"sync/atomic"
 	"testing"
 
+	"github.com/bassosimone/deferexit"
 	"github.com/bassosimone/weekly/internal/calendarapi"
 	"github.com/google/go-cmp/cmp"
+	"github.com/stretchr/testify/assert"
 )
 
 // outputCapturer captures the program output.
@@ -341,7 +342,7 @@ func TestMain(t *testing.T) {
 		stderrLines []string
 
 		// exitCode contains the expected exit code.
-		exitCode int64
+		exitCode int
 
 		// modifiedFiles contains the files that we expect
 		// to see to be modified by the test iself.
@@ -625,13 +626,6 @@ func TestMain(t *testing.T) {
 			stderr := &outputCapturer{}
 			env.Stderr = stderr
 
-			errPanicSentinel := errors.New("panic invoked")
-			exitCode := &atomic.Int64{}
-			env.Exit = func(code int) {
-				exitCode.Store(int64(code))
-				panic(errPanicSentinel)
-			}
-
 			beforeFS := &filesys{
 				mu:   sync.Mutex{},
 				root: tc.filesBefore, // make before files available
@@ -660,28 +654,9 @@ func TestMain(t *testing.T) {
 				}
 			}
 
-			// execute the function to test
-			func() {
-				// carefully handle panics inside Main
-				defer func() {
-					if r := recover(); r != nil {
-						err, ok := r.(error)
-						if !ok {
-							t.Error("unexpected panic", r)
-							return
-						}
-						if !errors.Is(err, errPanicSentinel) {
-							t.Error("unexpected panic", r)
-							return
-						}
-						// all good: this panic was caused by the
-						// mocked [os.Exit] we did setup above
-					}
-				}()
-
-				// invoke the function we are testing
-				Main()
-			}()
+			// execute the function under test, capturing the exit code
+			// from any deferexit.Panic raised via env.Exit
+			exitCode := deferexit.Run(Main)
 
 			// make sure the stdout is as expected
 			if diff := cmp.Diff(tc.stdoutLines, stdout.Lines()); diff != "" {
@@ -694,7 +669,7 @@ func TestMain(t *testing.T) {
 			}
 
 			// make sure exitcode is as expected
-			if diff := cmp.Diff(tc.exitCode, exitCode.Load()); diff != "" {
+			if diff := cmp.Diff(tc.exitCode, exitCode); diff != "" {
 				t.Error("exit code differs:", diff)
 			}
 
@@ -725,4 +700,25 @@ func TestMain(t *testing.T) {
 			}
 		})
 	}
+}
+
+// Test_logFatal verifies that the runtimex.LogFatalFunc override installed
+// by Main logs the values and raises a deferexit.Panic carrying exit code 1
+// (so deferred cleanup runs before the process actually terminates).
+func Test_logFatal(t *testing.T) {
+	// Capture log output so it does not pollute the test runner's stderr
+	// and so we can assert on what was logged.
+	var logBuf bytes.Buffer
+	originalOutput := log.Writer()
+	originalFlags := log.Flags()
+	log.SetOutput(&logBuf)
+	log.SetFlags(0)
+	defer func() {
+		log.SetOutput(originalOutput)
+		log.SetFlags(originalFlags)
+	}()
+
+	code := deferexit.Run(func() { logFatal("boom") })
+	assert.Equal(t, 1, code)
+	assert.Contains(t, logBuf.String(), "boom")
 }

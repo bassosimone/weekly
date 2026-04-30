@@ -3,11 +3,17 @@
 
 package main
 
-import "github.com/bassosimone/weekly/internal/cli"
+import (
+	"os"
+
+	"github.com/bassosimone/deferexit"
+	"github.com/bassosimone/weekly/internal/cli"
+)
 
 // accessible by tests to mock
 var cliMain = cli.Main
 
 func main() {
+	defer deferexit.Recover(os.Exit)
 	cliMain()
 }
