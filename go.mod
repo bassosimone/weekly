@@ -6,8 +6,8 @@ require (
 	github.com/bassosimone/deferexit v0.0.0-20260430074002-1397452dfab1
 	github.com/bassosimone/must v0.0.0-20260506051955-56ca05051aad
 	github.com/bassosimone/runtimex v0.0.0-20260430082757-ec3a7b516e79
-	github.com/bassosimone/vclip v0.0.0-20260506053839-7cb292304c43
-	github.com/bassosimone/vflag v0.0.0-20260506053229-9451307944a0
+	github.com/bassosimone/vclip v0.0.0-20260511091736-a75909f035a8
+	github.com/bassosimone/vflag v0.0.0-20260511090205-842d47f51218
 	github.com/google/go-cmp v0.7.0
 	github.com/olekukonko/tablewriter v1.1.4
 	github.com/rogpeppe/go-internal v1.14.1
@@ -20,7 +20,7 @@ require (
 	cloud.google.com/go/auth v0.20.0 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.8 // indirect
 	cloud.google.com/go/compute/metadata v0.9.0 // indirect
-	github.com/bassosimone/flagparser v0.0.0-20260506051140-fdbb96732c6f // indirect
+	github.com/bassosimone/flagparser v0.0.0-20260510230626-4d62c3d9c5ab // indirect
 	github.com/bassosimone/flagscanner v0.0.0-20260426205602-a02f7a8e1306 // indirect
 	github.com/bassosimone/textwrap v0.0.0-20260426210759-497ff9a64d39 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
@@ -48,10 +48,10 @@ require (
 	go.opentelemetry.io/otel v1.43.0 // indirect
 	go.opentelemetry.io/otel/metric v1.43.0 // indirect
 	go.opentelemetry.io/otel/trace v1.43.0 // indirect
-	golang.org/x/crypto v0.50.0 // indirect
-	golang.org/x/net v0.53.0 // indirect
-	golang.org/x/sys v0.43.0 // indirect
-	golang.org/x/text v0.36.0 // indirect
+	golang.org/x/crypto v0.51.0 // indirect
+	golang.org/x/net v0.54.0 // indirect
+	golang.org/x/sys v0.44.0 // indirect
+	golang.org/x/text v0.37.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20260504160031-60b97b32f348 // indirect
 	google.golang.org/grpc v1.81.0 // indirect
 	google.golang.org/protobuf v1.36.11 // indirect
