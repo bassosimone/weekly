@@ -10,10 +10,10 @@ require (
 	github.com/bassosimone/vflag v0.0.0-20260511090205-842d47f51218
 	github.com/google/go-cmp v0.7.0
 	github.com/olekukonko/tablewriter v1.1.4
-	github.com/rogpeppe/go-internal v1.14.1
+	github.com/rogpeppe/go-internal v1.15.0
 	github.com/stretchr/testify v1.11.1
 	golang.org/x/oauth2 v0.36.0
-	google.golang.org/api v0.280.0
+	google.golang.org/api v0.283.0
 )
 
 require (
