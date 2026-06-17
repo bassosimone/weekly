@@ -3,11 +3,11 @@ module github.com/bassosimone/weekly
 go 1.25.8
 
 require (
-	github.com/bassosimone/deferexit v0.0.0-20260430074002-1397452dfab1
-	github.com/bassosimone/must v0.0.0-20260506051955-56ca05051aad
-	github.com/bassosimone/runtimex v0.0.0-20260430082757-ec3a7b516e79
-	github.com/bassosimone/vclip v0.0.0-20260511091736-a75909f035a8
-	github.com/bassosimone/vflag v0.0.0-20260511090205-842d47f51218
+	github.com/bassosimone/deferexit v0.0.0-20260615110049-f737d0c9ca89
+	github.com/bassosimone/must v0.0.0-20260617064914-34c9ef153034
+	github.com/bassosimone/runtimex v0.0.0-20260615112505-ee72c4f0769e
+	github.com/bassosimone/vclip v0.0.0-20260617165137-5a71d326bb60
+	github.com/bassosimone/vflag v0.0.0-20260617162142-dce36f44c211
 	github.com/google/go-cmp v0.7.0
 	github.com/olekukonko/tablewriter v1.1.4
 	github.com/rogpeppe/go-internal v1.15.0
@@ -20,15 +20,15 @@ require (
 	cloud.google.com/go/auth v0.20.0 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.8 // indirect
 	cloud.google.com/go/compute/metadata v0.9.0 // indirect
-	github.com/bassosimone/flagparser v0.0.0-20260510230626-4d62c3d9c5ab // indirect
-	github.com/bassosimone/flagscanner v0.0.0-20260426205602-a02f7a8e1306 // indirect
-	github.com/bassosimone/textwrap v0.0.0-20260426210759-497ff9a64d39 // indirect
+	github.com/bassosimone/flagparser v0.0.0-20260615115304-f1a0193b86ca // indirect
+	github.com/bassosimone/flagscanner v0.0.0-20260615112222-a68f4ee842c2 // indirect
+	github.com/bassosimone/textwrap v0.0.0-20260615113929-f1a1c54eeabd // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/clipperhouse/displaywidth v0.11.0 // indirect
 	github.com/clipperhouse/uax29/v2 v2.7.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/fatih/color v1.19.0 // indirect
-	github.com/felixge/httpsnoop v1.0.4 // indirect
+	github.com/felixge/httpsnoop v1.1.0 // indirect
 	github.com/go-logr/logr v1.4.3 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/goccy/go-json v0.10.6 // indirect
@@ -52,7 +52,7 @@ require (
 	golang.org/x/net v0.56.0 // indirect
 	golang.org/x/sys v0.46.0 // indirect
 	golang.org/x/text v0.38.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20260610212136-7ab31c22f7ad // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20260615183401-62b3387ff324 // indirect
 	google.golang.org/grpc v1.81.1 // indirect
 	google.golang.org/protobuf v1.36.11 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
