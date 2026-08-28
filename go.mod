@@ -3,26 +3,26 @@ module github.com/bassosimone/weekly
 go 1.25.8
 
 require (
-	github.com/bassosimone/deferexit v0.0.0-20260823101823-0f95a017ebaf
-	github.com/bassosimone/must v0.0.0-20260825074710-ce6682ec0b5f
-	github.com/bassosimone/runtimex v0.0.0-20260823103059-603841e26ca3
-	github.com/bassosimone/vclip v0.0.0-20260826162233-c160f756f16c
-	github.com/bassosimone/vflag v0.0.0-20260826080943-520f354fef69
+	github.com/bassosimone/deferexit v0.0.0-20260828072731-f9256f880c34
+	github.com/bassosimone/must v0.0.0-20260828084513-347de4e2df4c
+	github.com/bassosimone/runtimex v0.0.0-20260828074549-6e2e561f98d1
+	github.com/bassosimone/vclip v0.0.0-20260828094436-cb4bf11d5bdd
+	github.com/bassosimone/vflag v0.0.0-20260828092355-3cab5f4711d4
 	github.com/google/go-cmp v0.7.0
 	github.com/olekukonko/tablewriter v1.1.4
 	github.com/rogpeppe/go-internal v1.16.0
 	github.com/stretchr/testify v1.12.1
 	golang.org/x/oauth2 v0.36.0
-	google.golang.org/api v0.293.0
+	google.golang.org/api v0.294.0
 )
 
 require (
 	cloud.google.com/go/auth v0.23.2 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.8 // indirect
 	cloud.google.com/go/compute/metadata v0.9.0 // indirect
-	github.com/bassosimone/flagparser v0.0.0-20260824081041-6c062c926c7b // indirect
-	github.com/bassosimone/flagscanner v0.0.0-20260823102942-9c9efa51e541 // indirect
-	github.com/bassosimone/textwrap v0.0.0-20260823103449-8d700213ddc3 // indirect
+	github.com/bassosimone/flagparser v0.0.0-20260828082109-edbc8ebcae44 // indirect
+	github.com/bassosimone/flagscanner v0.0.0-20260828074539-cf54a52b2823 // indirect
+	github.com/bassosimone/textwrap v0.0.0-20260828074613-3a15e93369e2 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/clipperhouse/displaywidth v0.11.0 // indirect
 	github.com/clipperhouse/uax29/v2 v2.7.0 // indirect
