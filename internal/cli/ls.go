@@ -40,6 +40,7 @@ func lsMain(ctx context.Context, args []string) error {
 
 	// Create default values for flags
 	var (
+		asOf      = ""
 		configDir = xdgConfigHome(env)
 		days      = int64(1)
 		format    = "box"
@@ -61,6 +62,17 @@ func lsMain(ctx context.Context, args []string) error {
 		"If empty, there's no aggregation.",
 		"Valid policies: daily, weekly, and monthly.",
 		"Default: empty.",
+	)
+
+	// Add the --as-of flag
+	fset.StringVar(
+		&asOf,
+		0,
+		"as-of",
+		"Use `DATE` as the most recent day to fetch, instead of today.",
+		"The format is YYYY-MM-DD, in the local time zone.",
+		"The whole DATE day is included in the fetched interval.",
+		"Default: the current day.",
 	)
 
 	// Add the --config-dir flag
@@ -137,7 +149,8 @@ func lsMain(ctx context.Context, args []string) error {
 	cinfo := runtimex.LogFatalOnError1(readCalendarInfo(env, calendarPath(configDir)))
 
 	// Compute start time and end time
-	startTime, endTime := lsDaysToTimeInterval(days)
+	anchor := runtimex.LogFatalOnError1(lsParseAsOf(asOf, time.Now()))
+	startTime, endTime := lsDaysToTimeInterval(anchor, days)
 
 	// Fetch and parse the events as weekly-calendar events
 	config := calendarapi.FetchEventsConfig{
@@ -167,10 +180,42 @@ func lsMaybeWarnOnEventsNumber(maxEvents int64, events []parser.Event) {
 	}
 }
 
-func lsDaysToTimeInterval(days int64) (startTime, endTime time.Time) {
-	now := time.Now()
-	year, month, day := now.Date()
-	endTime = time.Date(year, month, day, 0, 0, 0, 0, now.Location()).AddDate(0, 0, 1)
+// lsAsOfFormat is the format accepted by the `--as-of` flag.
+const lsAsOfFormat = "2006-01-02"
+
+// lsParseAsOf converts the `--as-of` flag value to the anchor day, i.e.,
+// the most recent day belonging to the interval we are going to fetch.
+//
+// The value argument is the raw flag value. The empty string means that
+// the user did not use the flag, in which case we return now.
+//
+// The now argument is the current time, whose location we also use
+// to extract and apply a time zone to user-supplied values.
+//
+// The return value is either the anchor day or an error.
+func lsParseAsOf(value string, now time.Time) (time.Time, error) {
+	if value == "" {
+		return now, nil
+	}
+	anchor, err := time.ParseInLocation(lsAsOfFormat, value, now.Location())
+	if err != nil {
+		return time.Time{}, fmt.Errorf("invalid --as-of value: %w", err)
+	}
+	return anchor, nil
+}
+
+// lsDaysToTimeInterval maps the anchor day and the number of days to fetch
+// to the interval to query, with the start included and the end excluded.
+//
+// The interval covers the whole anchor day plus the days-1 days preceding
+// it. Hence, days == 1 selects the anchor day alone. The degenerate case
+// days == 0 yields the empty time interval.
+//
+// We clamp days to the [0, 365] range, so that a negative or otherwise
+// unreasonable value cannot turn into an unreasonable query.
+func lsDaysToTimeInterval(anchor time.Time, days int64) (startTime, endTime time.Time) {
+	year, month, day := anchor.Date()
+	endTime = time.Date(year, month, day, 0, 0, 0, 0, anchor.Location()).AddDate(0, 0, 1)
 	daysClamped := int(min(max(0, days), 365))
 	startTime = endTime.AddDate(0, 0, -daysClamped)
 	return
