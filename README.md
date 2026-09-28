@@ -24,7 +24,7 @@ output formats (including JSON and CSV).
 
 ## Install
 
-1. You need Go >= 1.25
+1. You need the `stable` go version (see https://go.dev/dl/)
 
 2. Install this tool
 
