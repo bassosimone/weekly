@@ -24,7 +24,7 @@ output formats (including JSON and CSV).
 
 ## Install
 
-1. You need the `stable` go version (see https://go.dev/dl/)
+1. You need the go version specified in [go.mod](go.mod).
 
 2. Install this tool
 
@@ -138,7 +138,9 @@ The `weekly` tools exits with `0` on success and nonzero on failure.
 
 ## Build From Source
 
-You need Go >= 1.25. Run these commands:
+You need the go version specified in [go.mod](go.mod).
+
+Run these commands:
 
 ```bash
 git clone git@github.com/bassosimone/weekly

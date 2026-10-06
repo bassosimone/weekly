@@ -3,11 +3,11 @@ module github.com/bassosimone/weekly
 go 1.26.0
 
 require (
-	github.com/bassosimone/deferexit v0.0.0-20260928111243-1ceec2208869
-	github.com/bassosimone/must v0.0.0-20260928112453-2a38e7bb20e8
-	github.com/bassosimone/runtimex v0.0.0-20260928111457-f2fe934d5065
-	github.com/bassosimone/vclip v0.0.0-20261005053301-a4fe6d3e2269
-	github.com/bassosimone/vflag v0.0.0-20261001050637-5cd81148840b
+	github.com/bassosimone/deferexit v0.0.0-20261005144642-cbfbd3aa5dc7
+	github.com/bassosimone/must v0.0.0-20261005145849-34793a0e24f8
+	github.com/bassosimone/runtimex v0.0.0-20261005144844-77dc639b0e90
+	github.com/bassosimone/vclip v0.0.0-20261006070757-1ed765ad0339
+	github.com/bassosimone/vflag v0.0.0-20261006065510-ce05c7d76a28
 	github.com/google/go-cmp v0.7.0
 	github.com/olekukonko/tablewriter v1.1.5
 	github.com/rogpeppe/go-internal v1.16.0
@@ -20,9 +20,9 @@ require (
 	cloud.google.com/go/auth v0.24.0 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.3.0 // indirect
 	cloud.google.com/go/compute/metadata v0.10.0 // indirect
-	github.com/bassosimone/flagparser v0.0.0-20260928111833-44e028b025f9 // indirect
-	github.com/bassosimone/flagscanner v0.0.0-20260928111414-ec0ac9195577 // indirect
-	github.com/bassosimone/textwrap v0.0.0-20260928111620-10df61158669 // indirect
+	github.com/bassosimone/flagparser v0.0.0-20261005145229-03254f4ff6fc // indirect
+	github.com/bassosimone/flagscanner v0.0.0-20261005144756-a1383349131b // indirect
+	github.com/bassosimone/textwrap v0.0.0-20261005145027-6e50b1e009a9 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/clipperhouse/displaywidth v0.11.0 // indirect
 	github.com/clipperhouse/uax29/v2 v2.7.0 // indirect
@@ -52,7 +52,7 @@ require (
 	golang.org/x/net v0.59.0 // indirect
 	golang.org/x/sys v0.48.0 // indirect
 	golang.org/x/text v0.42.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20260928230214-8a89bd6388cc // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20261005182115-fad411399dd8 // indirect
 	google.golang.org/grpc v1.84.0 // indirect
 	google.golang.org/protobuf v1.36.12 // indirect
 )
