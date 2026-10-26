@@ -6,14 +6,14 @@ require (
 	github.com/bassosimone/deferexit v0.0.0-20261005144642-cbfbd3aa5dc7
 	github.com/bassosimone/must v0.0.0-20261005145849-34793a0e24f8
 	github.com/bassosimone/runtimex v0.0.0-20261005144844-77dc639b0e90
-	github.com/bassosimone/vclip v0.0.0-20261006070757-1ed765ad0339
-	github.com/bassosimone/vflag v0.0.0-20261006065510-ce05c7d76a28
+	github.com/bassosimone/vclip v0.0.0-20261026172840-2e4c3124d8cf
+	github.com/bassosimone/vflag v0.0.0-20261025003130-8306cb7f26c1
 	github.com/google/go-cmp v0.7.0
 	github.com/olekukonko/tablewriter v1.1.5
 	github.com/rogpeppe/go-internal v1.16.0
 	github.com/stretchr/testify v1.12.1
 	golang.org/x/oauth2 v0.37.0
-	google.golang.org/api v0.304.0
+	google.golang.org/api v0.309.0
 )
 
 require (
@@ -33,8 +33,8 @@ require (
 	github.com/goccy/go-json v0.11.2 // indirect
 	github.com/google/s2a-go v0.1.11 // indirect
 	github.com/google/uuid v1.6.0 // indirect
-	github.com/googleapis/enterprise-certificate-proxy v0.3.23 // indirect
-	github.com/googleapis/gax-go/v2 v2.26.2 // indirect
+	github.com/googleapis/enterprise-certificate-proxy v0.3.24 // indirect
+	github.com/googleapis/gax-go/v2 v2.27.0 // indirect
 	github.com/mattn/go-colorable v0.1.16 // indirect
 	github.com/mattn/go-isatty v0.0.24 // indirect
 	github.com/mattn/go-runewidth v0.0.31 // indirect
@@ -52,7 +52,7 @@ require (
 	golang.org/x/net v0.61.0 // indirect
 	golang.org/x/sys v0.49.0 // indirect
 	golang.org/x/text v0.43.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20261012220534-4341edf3f941 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20261026165753-2ffab32bce7e // indirect
 	google.golang.org/grpc v1.84.0 // indirect
 	google.golang.org/protobuf v1.36.12 // indirect
 )
