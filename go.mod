@@ -3,24 +3,24 @@ module github.com/bassosimone/weekly
 go 1.26.0
 
 require (
-	github.com/bassosimone/deferexit v0.0.0-20261005144642-cbfbd3aa5dc7
-	github.com/bassosimone/must v0.0.0-20261005145849-34793a0e24f8
-	github.com/bassosimone/runtimex v0.0.0-20261005144844-77dc639b0e90
-	github.com/bassosimone/vclip v0.0.0-20261026172840-2e4c3124d8cf
-	github.com/bassosimone/vflag v0.0.0-20261025003130-8306cb7f26c1
+	github.com/bassosimone/deferexit v0.0.0-20261113073924-4d2da5f0d17e
+	github.com/bassosimone/must v0.0.0-20261113075119-642b5cfdf519
+	github.com/bassosimone/runtimex v0.0.0-20261113074051-8e818250d877
+	github.com/bassosimone/vclip v0.0.0-20261113081147-52846deedfc8
+	github.com/bassosimone/vflag v0.0.0-20261113075946-01007884c6cc
 	github.com/google/go-cmp v0.7.0
 	github.com/olekukonko/tablewriter v1.1.5
 	github.com/rogpeppe/go-internal v1.16.0
 	github.com/stretchr/testify v1.12.1
-	golang.org/x/oauth2 v0.37.0
-	google.golang.org/api v0.309.0
+	golang.org/x/oauth2 v0.38.0
+	google.golang.org/api v0.314.0
 )
 
 require (
-	cloud.google.com/go/auth v0.24.1 // indirect
-	cloud.google.com/go/auth/oauth2adapt v0.3.0 // indirect
+	cloud.google.com/go/auth v0.24.4 // indirect
+	cloud.google.com/go/auth/oauth2adapt v0.3.1 // indirect
 	cloud.google.com/go/compute/metadata v0.10.0 // indirect
-	github.com/bassosimone/flagparser v0.0.0-20261005145229-03254f4ff6fc // indirect
+	github.com/bassosimone/flagparser v0.0.0-20261113074424-ecee0ab35c25 // indirect
 	github.com/bassosimone/flagscanner v0.0.0-20261005144756-a1383349131b // indirect
 	github.com/bassosimone/textwrap v0.0.0-20261005145027-6e50b1e009a9 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
@@ -30,10 +30,10 @@ require (
 	github.com/felixge/httpsnoop v1.1.0 // indirect
 	github.com/go-logr/logr v1.4.4 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
-	github.com/goccy/go-json v0.11.2 // indirect
+	github.com/goccy/go-json v0.12.0 // indirect
 	github.com/google/s2a-go v0.1.11 // indirect
 	github.com/google/uuid v1.6.0 // indirect
-	github.com/googleapis/enterprise-certificate-proxy v0.3.24 // indirect
+	github.com/googleapis/enterprise-certificate-proxy v0.3.25 // indirect
 	github.com/googleapis/gax-go/v2 v2.27.0 // indirect
 	github.com/mattn/go-colorable v0.1.16 // indirect
 	github.com/mattn/go-isatty v0.0.24 // indirect
@@ -47,12 +47,12 @@ require (
 	go.opentelemetry.io/otel/log v1.47.0 // indirect
 	go.opentelemetry.io/otel/metric v1.47.0 // indirect
 	go.opentelemetry.io/otel/trace v1.47.0 // indirect
-	go.yaml.in/yaml/v3 v3.0.5 // indirect
-	golang.org/x/crypto v0.58.0 // indirect
-	golang.org/x/net v0.61.0 // indirect
-	golang.org/x/sys v0.49.0 // indirect
-	golang.org/x/text v0.43.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20261026165753-2ffab32bce7e // indirect
-	google.golang.org/grpc v1.84.0 // indirect
+	go.yaml.in/yaml/v3 v3.0.6 // indirect
+	golang.org/x/crypto v0.59.0 // indirect
+	golang.org/x/net v0.62.0 // indirect
+	golang.org/x/sys v0.50.0 // indirect
+	golang.org/x/text v0.44.0 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20261110000943-09e21b237f2c // indirect
+	google.golang.org/grpc v1.85.0 // indirect
 	google.golang.org/protobuf v1.36.12 // indirect
 )
